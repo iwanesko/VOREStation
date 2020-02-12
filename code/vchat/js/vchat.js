@@ -155,12 +155,11 @@ function start_vue() {
 			this.inverted = get_storage("darkmode");
 			this.inverted = get_storage("crushing");
 
-			var vueThis = this;
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', 'ss13styles.css');
-			xhr.onreadystatechange = function() {
-				vueThis.styles += xhr.responseText;
-			}
+			xhr.onreadystatechange = (function() {
+				this.styles += xhr.responseText;
+			}).bind(this);
 			xhr.send();
 
 			var topstyles = document.querySelector("head > style").innerHTML;
@@ -231,10 +230,9 @@ function start_vue() {
 				this.active_tab.active = false;
 				tab.active = true;
 
-				var varthis = this;
 				tab.classes.forEach( function(cls) {
-					varthis.unread_messages[cls] = false;
-				});
+					this.unread_messages[cls] = false;
+				}, this);
 			},
 			//Toggle edit mode
 			editmode: function() {
