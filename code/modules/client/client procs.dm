@@ -60,7 +60,8 @@
 		send2adminirc(href_list["irc_msg"])
 		return
 
-
+	if(href_list["_src_"] == "chat")
+		return chatOutput.Topic(href, href_list)
 
 	//Logs all hrefs
 	if(config && config.log_hrefs && href_logfile)
@@ -112,6 +113,10 @@
 	GLOB.directory[ckey] = src
 
 	GLOB.ahelp_tickets.ClientLogin(src)
+
+	chatOutput = new /datum/chatOutput(src) //veechat
+	spawn()
+		chatOutput.start()
 
 	//Admin Authorisation
 	holder = admin_datums[ckey]

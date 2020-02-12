@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html debug="true">
+<head>
+	<title>VChat</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<!-- Important scripts -->
+	<script type="text/javascript" src="polyfills.js"></script>
+	<script type="text/javascript" src="evercookie.js"></script>
+	<script type="text/javascript" src="vchat.js"></script>
+	<script type="text/javascript" src="vue.js"></script>
+
+	<!-- Styles -->
+	<link rel="stylesheet" type="text/css" href="semantic.css" />
+	<link rel="stylesheet" type="text/css" href="vchat-font-embedded.css" />
+	<link rel="stylesheet" type="text/css" href="ss13styles.css" />
+
+	
+	<!-- <script type="text/javascript" src="firebug-lite-debug.js"></script> -->
+	
+	<style>
+		#contentbox {
+			margin-top: 4rem; /* Make room for the fixed top menu */
+		}
+
+		.item {
+			cursor: pointer;
+		}
+
+		body.inverted {
+			background-color: #111111;
+		}
+
+		.blinkwarn {
+			color: #FF0000;
+			animation: blink-animation 1s steps(5, start) infinite;
+		}
+
+		@keyframes blink-animation {
+			to {
+				visibility: hidden;
+			}
+		}
+
+		/* The chat message display classes */
+		#messagebox > div { display: none; }
+		#messagebox.vc_showall > div { display: block; }
+		
+		#messagebox.vc_localchat > .vc_localchat {display: block;}
+		#messagebox.vc_radio > .vc_radio {display: block;}
+		#messagebox.vc_warnings > .vc_warnings  {display: block;}
+		#messagebox.vc_info > .vc_info {display: block;}
+		#messagebox.vc_deadchat > .vc_deadchat  {display: block;}
+		#messagebox.vc_globalooc > .vc_globalooc {display: block;}
+		#messagebox.vc_adminpm > .vc_adminpm {display: block;}
+		#messagebox.vc_adminchat > .vc_adminchat {display: block;}
+		#messagebox.vc_modchat > .vc_modchat {display: block;}
+		#messagebox.vc_eventchat > .vc_eventchat {display: block;}
+		#messagebox.vc_system > .vc_system {display: block;}
+	</style>
+
+</head>
+
+<body>
+<div id="app">
+
+	<!-- Top menu -->
+	<div class="ui top fixed pointing menu" :class="{ inverted: inverted }">
+		<div v-for="tab in tabs" class="item" :class="{ active: tab.active, inverted: inverted }" @click="switchtab(tab)" @click.ctrl="editmode">
+			{{tab.name}}
+			<div class="ui empty circular label" :class="tab_unread_classes(tab)"></div>
+		</div>
+		
+		<div class="right menu">
+			<div class="item" style="cursor: pointer;" :class="{ inverted: inverted }" @click="newtab" title="New Tab"><i class="icon-folder-add"></i></div>
+			<div class="item" style="cursor: pointer;" :class="{ inverted: inverted }" @click="pause" title="Pause Autoscroll">
+				<i class="icon-pause-outline" :class="{ blinkwarn: paused }"></i>
+			</div>
+			<div class="item" style="cursor: pointer;" :class="{ inverted: inverted }" @click="editmode" title="Edit Mode">
+				<i class="icon-cog-outline" :class="{ blinkwarn: editing }"></i>
+			</div>
+			<div class="item" style="padding-left: 0px !important;"><span class="ui circular label" title="VChat Latency (Not exactly network latency)" :class="ping_classes">{{latency}}ms</span></div>
+		</div>
+		
+	</div>
+	
+	<!-- Editor box -->
+	<div id="contentbox">
+		<div v-show="editing" id="editbox" class="ui segment" :class="{ inverted: inverted }">
+			<div class="ui internally celled grid">
+				<div class="row">
+					<div class="sixteen wide column">
+						<div class="ui center aligned header" :class="{ inverted: inverted }">
+							<h2>VChat Settings</h2>
+						</div>
+						<div style="text-align: center;"><a href="#" @click="editmode">Close Settings</a></div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="eight wide column">
+						<h3>'{{active_tab.name}}' Tab Settings</h3>
+						<span v-show="active_tab.immutable">This tab is immutable. You cannot make changes.</span>
+						<div v-show="!active_tab.immutable">
+							<a href="#" @click="renametab">Rename Tab</a> - <a href="#" @click="deltab">Delete Tab</a>
+							<h5>Messages to display:</h5>
+							<div class="ui form">
+								<div class="grouped fields">
+									<div class="field" v-for="type in type_table">
+										<div class="ui slider checkbox" :class="{ inverted: inverted, disabled: type.required || active_tab.immutable, checked: type.required || active_tab.immutable }">
+											<input type="checkbox" id="type.becomes" :value="type.becomes" v-model="active_tab.classes" :disabled="type.required || active_tab.immutable" :checked="type.required || active_tab.immutable"><label :for="type.becomes">{{type.pretty}}</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="eight wide column">
+						<h3>Global Settings</h3>
+						<div class="ui form">
+							<div class="grouped fields">
+								<div class="field">
+									<div class="ui slider checkbox" :class="{ inverted: inverted }">
+										<input type="checkbox" id="darkmode" v-model="inverted"><label for="darkmode">Dark Mode</label>
+									</div>
+								</div>
+								<div class="field">
+									<div class="ui slider checkbox" :class="{ inverted: inverted }">
+										<input type="checkbox" id="combining" v-model="crushing"><label for="combining">Combine Messages</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<button class="ui button" :class="{ inverted: inverted }" @click="save_chatlog">Save Chatlog</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Messages box -->
+		<div v-show="!editing" id="messagebox" class="ui segment" :class="active_classes">
+			<div v-for="message in sorted_messages" :class="message.category">
+				<span v-html="message.content"></span>
+				<span v-show="message.repeats > 1" class="ui grey circular label">x{{message.repeats}}</span>
+			</div>
+		</div>
+
+	</div>
+	<!--
+		Tab: {{active_tab}}<br>
+		Classes: {{active_classes}}<br>
+		Editing: {{editing}}
+		Styles: {{styles}}
+	-->
+
+</div>
+</body>
+
+<script>
+	//Document Ready
+	(function(){
+		start_vchat();
+	})();
+
+</script>
+
+</html>
