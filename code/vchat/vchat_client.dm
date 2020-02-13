@@ -21,7 +21,7 @@ var/list/chatResources = list(
 
 //Should match the value set in the browser js
 #define MAX_COOKIE_LENGTH 5
-#define BACKLOG_LENGTH 12000 //12000 is 20 minutes
+#define BACKLOG_LENGTH 20 MINUTES
 
 //This is used to convert icons to base64 <image> strings, because byond stores icons in base64 in savefiles.
 /var/savefile/iconCache = new /savefile("data/iconCache.sav")
@@ -269,8 +269,8 @@ var/list/chatResources = list(
 	var/list/partial = splittext(iconData, "{")
 	return replacetext(copytext(partial[2], 3, -5), "\n", "")
 
-/proc/bicon(var/obj, var/use_class = 1)
-	var/class = use_class ? "class='icon misc'" : null
+/proc/bicon(var/obj, var/use_class = 1, var/custom_classes = "")
+	var/class = use_class ? "class='icon misc [custom_classes]'" : null
 	if (!obj)
 		return
 
@@ -285,13 +285,11 @@ var/list/chatResources = list(
 	var/key = "[istype(A.icon, /icon) ? "\ref[A.icon]" : A.icon]:[A.icon_state]"
 	if (!bicon_cache[key]) // Doesn't exist, make it.
 		var/icon/I = icon(A.icon, A.icon_state, SOUTH, 1)
-		if (ishuman(obj)) // Shitty workaround for a BYOND issue.
-			var/icon/temp = I
-			I = icon()
-			I.Insert(temp, dir = SOUTH)
+		if (ishuman(obj))
+			I = getFlatIcon(obj,SOUTH) //Ugly
 		bicon_cache[key] = icon2base64(I, key)
 	if(use_class)
-		class = "class='icon [A.icon_state]'"
+		class = "class='icon [A.icon_state] [custom_classes]'"
 
 	return "<img [class] src='data:image/png;base64,[bicon_cache[key]]'>"
 
