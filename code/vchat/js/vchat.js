@@ -5,7 +5,7 @@ var vchat_opts = {
 	pingThisOften: 10000, //ms
 	pingDropsAllowed: 2,
 	cookiePrefix: "vst-" //If you're another server, you can change this if you want.
-}
+};
 
 /***********
 *
@@ -68,11 +68,12 @@ function start_vue() {
 			editing: false, //If we're in settings edit mode
 			paused: false, //Autoscrolling
 			latency: 0, //Not necessarily network latency, since the game server has to align the responses into ticks
-			styles: "", //Styles for chat downloaded files
+			ext_styles: "", //Styles for chat downloaded files
 
 			//Settings
 			inverted: false, //Dark mode
 			crushing: true, //Combine similar messages
+			showingnum: 200, //How many messages to show
 
 			//The table to map game css classes to our vchat classes
 			type_table: [
@@ -150,21 +151,37 @@ function start_vue() {
 				}
 			],
 		},
+		/* Stress test
+		created: function() {
+			var varthis = this;
+			setInterval( function() {
+				if(varthis.messages.length > 10000) {
+					return;
+				}
+				var stringymessages = JSON.stringify(varthis.messages);
+				var unstringy = JSON.parse(stringymessages);
+				unstringy.forEach( function(message) {
+					varthis.messages.push(message);	
+				});
+				varthis.internal_message("Now have " + varthis.messages.length + " messages in array.");
+			}, 10000);
+		},
+		*/
 		mounted: function() {
 			//Load our settings
 			this.inverted = get_storage("darkmode");
 			this.inverted = get_storage("crushing");
+			this.showingnum = get_storage("showingnum");
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', 'ss13styles.css');
 			xhr.onreadystatechange = (function() {
-				this.styles += xhr.responseText;
+				this.ext_styles = xhr.responseText;
 			}).bind(this);
 			xhr.send();
 
 			var topstyles = document.querySelector("head > style").innerHTML;
-			this.styles += topstyles;
-
+			this.ext_styles += topstyles;
 		},
 		updated: function() {
 			if(!this.editing && !this.paused) {
@@ -184,6 +201,20 @@ function start_vue() {
 			}, 
 			crushing: function (newSetting) {
 				set_storage("crushing",newSetting);
+			},
+			showingnum: function (newSetting, oldSetting) {
+				if(!isFinite(newSetting)) {
+					this.showingnum = oldSetting;
+					return;
+				}
+				
+				newSetting = Math.floor(newSetting);
+				if(newSetting <= 50) {
+					this.showingnum = 50;
+				} else if(newSetting > 2000) {
+					this.showingnum = 2000;
+				}
+				set_storage("showingnum",this.showingnum);
 			}
 		},
 		computed: {
@@ -211,16 +242,12 @@ function start_vue() {
 				else if(this.latency <= 300) { return "yellow"; }
 				else { return "red"; }
 			},
-			sorted_messages: function() {
-				function compare(a, b) {
-					if (a.time < b.time)
-						return -1;
-					if (a.time > b.time)
-						return 1;
-					return 0;
+			shown_messages: function() {
+				if(this.messages.length <= this.showingnum) {
+					return this.messages;
+				} else {
+					return this.messages.slice(-1*this.showingnum);
 				}
-
-				return this.messages.sort(compare);
 			}
 		},
 		methods: {
@@ -259,7 +286,7 @@ function start_vue() {
 				}
 				var tabtorename = this.active_tab;
 				var newname = window.prompt("Type the desired tab name:", tabtorename.name);
-				if(newname == null || newname == "" || tabtorename == null) {
+				if(newname === null || newname === "" || tabtorename === null) {
 					return;
 				}
 				tabtorename.name = newname;
@@ -320,10 +347,10 @@ function start_vue() {
 			//Push an internally generated message into our array
 			internal_message: function(message) {
 				let newmessage = {
-					time: this.messages.length ? this.sorted_messages.slice(-1).time : 0,
+					time: this.messages.length ? this.messages.slice(-1).time+1 : 0,
 					category: "vc_system",
-					content: "[VChat Internal] " + message
-				}
+					content: "<span class='notice'>[VChat Internal] " + message + "</span>"
+				};
 				this.messages.push(newmessage);
 			},
 			//Derive a vchat category based on css classes
@@ -341,7 +368,7 @@ function start_vue() {
 				}
 				
 				let category = "nomatch"; //What we use if the classes aren't anything we know.
-				let found_type = this.type_table.find( function(type) {
+				this.type_table.find( function(type) {
 					if(evaluating.msMatchesSelector(type.matches)) {
 						category = type.becomes;
 						return true;
@@ -351,7 +378,7 @@ function start_vue() {
 				return category;
 			},
 			save_chatlog: function() {
-				var textToSave = "<html><head><style>"+this.styles+"</style></head><body>";
+				var textToSave = "<html><head><style>"+this.ext_styles+"</style></head><body>";
 				this.messages.forEach( function(message) {
 					textToSave += message.content;
 					if(message.repeats > 1) {
@@ -359,12 +386,10 @@ function start_vue() {
 					}
 					textToSave += "<br>\n";
 				});
-				textToSave += "</body></html>"
+				textToSave += "</body></html>";
 				var hiddenElement = document.createElement('a');
 				hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
 				hiddenElement.target = '_blank';
-
-				var now = Date.now();
 
 				var filename = "chat_export.html";
 

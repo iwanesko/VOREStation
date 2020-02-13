@@ -117,7 +117,7 @@
 					</div>
 					<div class="eight wide column">
 						<h3>Global Settings</h3>
-						<div class="ui form">
+						<div class="ui form" :class="{ inverted: inverted }">
 							<div class="grouped fields">
 								<div class="field">
 									<div class="ui slider checkbox" :class="{ inverted: inverted }">
@@ -129,6 +129,10 @@
 										<input type="checkbox" id="combining" v-model="crushing"><label for="combining">Combine Messages</label>
 									</div>
 								</div>
+								<div class="field">
+									<label :class="{ inverted: inverted }"># Displayed Messages</label>
+									<input :class="{ inverted: inverted }" type="number" name="showingnum" placeholder="200" title="Will affect performance!" v-model.lazy.number="showingnum" required style="width: 5em;">
+								</div>
 							</div>
 						</div>
 						<button class="ui button" :class="{ inverted: inverted }" @click="save_chatlog">Save Chatlog</button>
@@ -139,7 +143,8 @@
 
 		<!-- Messages box -->
 		<div v-show="!editing" id="messagebox" class="ui segment" :class="active_classes">
-			<div v-for="message in sorted_messages" :class="message.category">
+			<div v-show="messages.length > showingnum"><span class='notice'>[ {{messages.length - showingnum}} previous messages hidden due to display settings. ]</span></div>
+			<div v-for="message in shown_messages" :class="message.category">
 				<span v-html="message.content"></span>
 				<span v-show="message.repeats > 1" class="ui grey circular label">x{{message.repeats}}</span>
 			</div>
