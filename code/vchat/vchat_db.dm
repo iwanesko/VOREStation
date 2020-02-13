@@ -1,5 +1,5 @@
 #define VCHAT_FILENAME "vchat.db"
-var/database/vchatdb
+GLOBAL_DATUM(vchatdb, /database)
 
 //Boot up db file
 /proc/init_vchat()
@@ -7,14 +7,14 @@ var/database/vchatdb
 	fdel(VCHAT_FILENAME)
 
 	//Create a new one
-	vchatdb = new(VCHAT_FILENAME)
+	GLOB.vchatdb = new(VCHAT_FILENAME)
 
 	//Build our basic boring tables
 	vchat_create_tables()
 
 //Check to see if it's init
 /proc/check_vchat()
-	if(istype(vchatdb))
+	if(istype(GLOB.vchatdb))
 		return TRUE
 	else
 		return FALSE
@@ -29,7 +29,7 @@ var/database/vchatdb
 	var/database/query/q = vchat_build_query(query)
 
 	//Run it
-	q.Execute(vchatdb)
+	q.Execute(GLOB.vchatdb)
 
 	//Handle errors
 	if(q.Error())
@@ -48,7 +48,7 @@ var/database/vchatdb
 	var/database/query/q = vchat_build_query(query)
 
 	//Run it
-	q.Execute(vchatdb)
+	q.Execute(GLOB.vchatdb)
 
 	//Handle errors
 	if(q.Error())
@@ -90,10 +90,6 @@ var/database/vchatdb
 	var/indexdef = "CREATE INDEX ckey_index ON messages (ckey)"
 	vchat_exec_update(indexdef)
 
-/proc/vchat_check_table(var/tablename)
-	var/tabledef = "SELECT name FROM sqlite_master WHERE type='table' AND name='[tablename]'"
-	return vchat_exec_query(tabledef)
-
 //INSERT a new message
 /proc/vchat_add_message(var/ckey, var/message)
 	if(!ckey || !message)
@@ -114,3 +110,5 @@ var/database/vchatdb
 	var/list/getdef = list("SELECT * FROM messages WHERE ckey = ? AND worldtime >= ?", ckey, oldest)
 
 	return vchat_exec_query(getdef)
+
+#undef VCHAT_FILENAME

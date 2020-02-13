@@ -24,7 +24,7 @@ var/list/chatResources = list(
 #define BACKLOG_LENGTH 20 MINUTES
 
 //This is used to convert icons to base64 <image> strings, because byond stores icons in base64 in savefiles.
-/var/savefile/iconCache = new /savefile("data/iconCache.sav")
+GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of icons for the browser output
 
 //The main object attached to clients, created when they connect, and has start() called on it in client/New()
 /datum/chatOutput
@@ -260,12 +260,11 @@ var/list/chatResources = list(
 //Converts an icon to base64. Operates by putting the icon in the iconCache savefile,
 // exporting it as text, and then parsing the base64 from that.
 // (This relies on byond automatically storing icons in savefiles as base64)
-/var/list/bicon_cache = list()
 /proc/icon2base64(var/icon/icon, var/iconKey = "misc")
 	if (!isicon(icon)) return FALSE
 
-	iconCache[iconKey] << icon
-	var/iconData = iconCache.ExportText(iconKey)
+	GLOB.iconCache[iconKey] << icon
+	var/iconData = GLOB.iconCache.ExportText(iconKey)
 	var/list/partial = splittext(iconData, "{")
 	return replacetext(copytext(partial[2], 3, -5), "\n", "")
 
@@ -274,6 +273,7 @@ var/list/chatResources = list(
 	if (!obj)
 		return
 
+	var/static/list/bicon_cache = list()
 	if (isicon(obj))
 		if (!bicon_cache["\ref[obj]"]) // Doesn't exist yet, make it.
 			bicon_cache["\ref[obj]"] = icon2base64(obj)
