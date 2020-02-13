@@ -448,9 +448,15 @@ function byondDecode(message) {
 }
 
 //This is the function byond actually communicates with using byond's client << output() method.
-function putmessage(message) {
-	message = byondDecode(message);
-	vueapp.add_message(message);
+function putmessage(messages) {
+	messages = byondDecode(messages);
+	if (Array.isArray(messages)) {
+		messages.forEach(function(message) {
+			vueapp.add_message(message);
+		});
+	} else if (typeof messages === 'object') {
+		vueapp.add_message(messages);
+	}
 }
 
 //Send an internal message generated in the javascript

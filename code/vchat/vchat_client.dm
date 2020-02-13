@@ -8,7 +8,9 @@ var/list/chatResources = list(
 	"code/vchat/css/ss13styles.css" //Ingame styles
 )
 
+// The to_chat() macro calls this proc
 /proc/__to_chat(var/target, var/message)
+	// First do logging in database
 	if(isclient(target))
 		var/client/C = target
 		vchat_add_message(C.ckey,message)
@@ -17,7 +19,11 @@ var/list/chatResources = list(
 		if(M.ckey)
 			vchat_add_message(M.ckey,message)
 
-	to_chat_immediate(target, world.time, message)
+	// Now lets either queue it for sending, or send it right now
+	if(Master.current_runlevel == RUNLEVEL_INIT || !SSchat?.subsystem_initialized)
+		to_chat_immediate(target, world.time, message)
+	else
+		SSchat.queue(target, world.time, message)
 
 //Should match the value set in the browser js
 #define MAX_COOKIE_LENGTH 5
@@ -334,27 +340,21 @@ var/to_chat_src
 			log_debug("Somehow, to_chat got a text as a target")
 			return
 
+		var/original_message = message
 		message = replacetext(message, "\n", "<br>")
-
-		if(findtext(message, "\improper"))
-			message = replacetext(message, "\improper", "")
-		if(findtext(message, "\proper"))
-			message = replacetext(message, "\proper", "")
+		message = replacetext(message, "\improper", "")
+		message = replacetext(message, "\proper", "")
 
 		if(isnull(time))
 			time = world.time
 
-		var/client/C
-		if(istype(target, /client))
-			C = target
-		if(ismob(target))
-			C = target:client
-
+		var/client/C = CLIENT_FROM_VAR(target)
 		if(C && C.chatOutput)
 			if(C.chatOutput.broken)
-				C << message
+				DIRECT_OUTPUT(C, original_message)
 				return
-
+			
+			// Client still loading, put their messages in a queue
 			if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
 				C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = list("time" = time, "message" = message)
 				return
