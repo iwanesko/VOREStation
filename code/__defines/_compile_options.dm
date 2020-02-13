@@ -20,6 +20,3 @@
 	#define USING_MAP_DATUM /datum/map
 	#define MAP_OVERRIDE 1
 #endif
-
-// Macros that must exist before world.dm
-#define to_chat to_chat_filename=__FILE__;to_chat_line=__LINE__;to_chat_src=src;__to_chat
