@@ -1,3 +1,4 @@
+//The 'V' is for 'VORE' but you can pretend it's for Vue.js if you really want.
 
 //Options for vchat
 var vchat_opts = {
@@ -23,7 +24,7 @@ if (storageAvailable('localStorage')) {
 	get_storage = get_localstorage;
 }
 
-//
+//State-tracking variables
 var vchat_state = {
 	ready: false,
 
@@ -74,7 +75,7 @@ function start_vue() {
 			inverted: false, //Dark mode
 			crushing: true, //Combine similar messages
 			showingnum: 200, //How many messages to show
-			animated: true,
+			animated: true, //Small CSS animations for new messages
 
 			//The table to map game css classes to our vchat classes
 			type_table: [
@@ -152,8 +153,13 @@ function start_vue() {
 				}
 			],
 		},
-		/* Stress test
 		created: function() {
+			/*Dog mode
+			setTimeout(function(){
+				document.body.className += " woof";
+			},5000);
+			*/
+			/* Stress test
 			var varthis = this;
 			setInterval( function() {
 				if(varthis.messages.length > 10000) {
@@ -166,14 +172,11 @@ function start_vue() {
 				});
 				varthis.internal_message("Now have " + varthis.messages.length + " messages in array.");
 			}, 10000);
+			*/
 		},
-		*/
 		mounted: function() {
 			//Load our settings
-			this.inverted = get_storage("darkmode");
-			this.inverted = get_storage("crushing");
-			this.showingnum = get_storage("showingnum");
-			this.animated = get_storage("animated");
+			this.load_settings();
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', 'ss13styles.css');
@@ -256,6 +259,13 @@ function start_vue() {
 			}
 		},
 		methods: {
+			//Load the chat settings
+			load_settings: function() {
+				this.inverted = get_storage("darkmode", false);
+				this.crushing = get_storage("crushing", true);
+				this.showingnum = get_storage("showingnum", 200);
+				this.animated = get_storage("animated", true);
+			},
 			//Change to another tab
 			switchtab: function(tab) {
 				if(tab == this.active_tab) return;
@@ -524,16 +534,16 @@ function set_localstorage(key, value) {
 	localstorage.setItem(vchat_opts.cookiePrefix+key,value);
 }
 
-function get_localstorage(key) {
+function get_localstorage(key, deffo) {
 	let localstorage = window.localStorage;
 	let value = localstorage.getItem(vchat_opts.cookiePrefix+key);
 	
 	//localstorage only stores strings.
-	if(value == "null") {
-		value = null;
-	} else if(value === 'true') {
+	if(value == "null" || value === null) {
+		value = deffo;
+	} else if(value === "true") {
 		value = true;
-	} else if(value === 'false') {
+	} else if(value === "false") {
 		value = false;
 	}
 	return value;
@@ -547,7 +557,7 @@ function set_cookie(key, value) {
 	document.cookie = vchat_opts.cookiePrefix+key+"="+value+";expires="+then+";path=/";
 }
 
-function get_cookie(key) {
+function get_cookie(key, deffo) {
 	var candidates = {cookie: null, localstorage: null, indexeddb: null};
 	let cookie_array = document.cookie.split(';');
 	let cookie_object = {};
@@ -557,11 +567,11 @@ function get_cookie(key) {
 		let left = decodeURIComponent(clean.substring(0,equals)); //From start to one char before equals
 		let right = decodeURIComponent(clean.substring(equals+1)); //From one char after equals to end
 		//cookies only stores strings.
-		if(right == "null") {
-			right = null;
-		} else if(right === 'true') {
+		if(right == "null" || right === null) {
+			right = deffo;
+		} else if(right === "true") {
 			right = true;
-		} else if(right === 'false') {
+		} else if(right === "false") {
 			right = false;
 		}
 		cookie_object[left] = right; //Stick into object
