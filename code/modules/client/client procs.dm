@@ -106,7 +106,9 @@
 		del(src)
 		return
 
-	to_chat(src, "<font color='red'>If the title screen is black, resources are still downloading. Please be patient until the title screen appears.</font>")
+	//Only show this if they are put into a new_player mob. Otherwise, "what title screen?"
+	if(isnewplayer(src.mob))
+		to_chat(src, "<font color='red'>If the title screen is black, resources are still downloading. Please be patient until the title screen appears.</font>")
 
 
 	GLOB.clients += src
@@ -164,14 +166,14 @@
 		void.MakeGreed()
 	screen += void
 
-	if(prefs.lastchangelog != changelog_hash) //bolds the changelog button on the interface so we know there are updates.
+	if((prefs.lastchangelog != changelog_hash) && isnewplayer(src.mob)) //bolds the changelog button on the interface so we know there are updates.
 		to_chat(src, "<span class='info'>You have unread updates in the changelog.</span>")
 		winset(src, "rpane.changelog", "background-color=#eaeaea;font-style=bold")
 		if(config.aggressive_changelog)
 			src.changes()
 
 	hook_vr("client_new",list(src)) //VOREStation Code
-	
+
 	if(config.paranoia_logging)
 		var/alert = FALSE //VOREStation Edit start.
 		if(isnum(player_age) && player_age == 0)
