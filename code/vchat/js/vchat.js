@@ -74,6 +74,7 @@ function start_vue() {
 			inverted: false, //Dark mode
 			crushing: true, //Combine similar messages
 			showingnum: 200, //How many messages to show
+			animated: true,
 
 			//The table to map game css classes to our vchat classes
 			type_table: [
@@ -172,6 +173,7 @@ function start_vue() {
 			this.inverted = get_storage("darkmode");
 			this.inverted = get_storage("crushing");
 			this.showingnum = get_storage("showingnum");
+			this.animated = get_storage("animated");
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', 'ss13styles.css');
@@ -201,6 +203,9 @@ function start_vue() {
 			}, 
 			crushing: function (newSetting) {
 				set_storage("crushing",newSetting);
+			},
+			animated: function (newSetting) {
+				set_storage("animated",newSetting);
 			},
 			showingnum: function (newSetting, oldSetting) {
 				if(!isFinite(newSetting)) {

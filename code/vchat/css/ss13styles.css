@@ -123,3 +123,12 @@ img.icon.bigicon		{max-height: 32px;}
 .debug_info						{}
 .debug_debug					{color:#0000FF;}
 .debug_trace					{color:#888888;}
+
+/* Log animations */
+.msgsanim-enter-active {
+	transition: opacity 0.5s, transform 0.5s;
+}
+.msgsanim-enter {
+	opacity: 0;
+	transform: translateX(15px);
+}

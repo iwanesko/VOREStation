@@ -130,6 +130,11 @@
 									</div>
 								</div>
 								<div class="field">
+									<div class="ui slider checkbox" :class="{ inverted: inverted }">
+										<input type="checkbox" id="combining" v-model="animated"><label for="animated">Animate Messages</label>
+									</div>
+								</div>
+								<div class="field">
 									<label :class="{ inverted: inverted }"># Displayed Messages</label>
 									<input :class="{ inverted: inverted }" type="number" name="showingnum" placeholder="200" title="Will affect performance!" v-model.lazy.number="showingnum" required style="width: 5em;">
 								</div>
@@ -144,10 +149,12 @@
 		<!-- Messages box -->
 		<div v-show="!editing" id="messagebox" class="ui segment" :class="active_classes">
 			<div v-show="messages.length > showingnum"><span class='notice'>[ {{messages.length - showingnum}} previous messages hidden due to display settings. ]</span></div>
-			<div v-for="message in shown_messages" :class="message.category">
-				<span v-html="message.content"></span>
-				<span v-show="message.repeats > 1" class="ui grey circular label">x{{message.repeats}}</span>
-			</div>
+			<transition-group name="msgsanim" tag="span" :css="animated">
+				<div v-for="message in shown_messages" :class="message.category" :key="message">
+					<span v-html="message.content"></span>
+					<span v-show="message.repeats > 1" class="ui grey circular label">x{{message.repeats}}</span>
+				</div>
+			</transition-group>
 		</div>
 
 	</div>
