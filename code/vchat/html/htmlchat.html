@@ -44,20 +44,20 @@
 		}
 
 		/* The chat message display classes */
-		#messagebox > div { display: none; }
-		#messagebox.vc_showall > div { display: block; }
+		#messagebox div 							{ display: none; } /* Hide messages by default */
+		#messagebox.vc_showall div 					{ display: block; } /* Unless we have vc_showall */
 		
-		#messagebox.vc_localchat > .vc_localchat {display: block;}
-		#messagebox.vc_radio > .vc_radio {display: block;}
-		#messagebox.vc_warnings > .vc_warnings  {display: block;}
-		#messagebox.vc_info > .vc_info {display: block;}
-		#messagebox.vc_deadchat > .vc_deadchat  {display: block;}
-		#messagebox.vc_globalooc > .vc_globalooc {display: block;}
-		#messagebox.vc_adminpm > .vc_adminpm {display: block;}
-		#messagebox.vc_adminchat > .vc_adminchat {display: block;}
-		#messagebox.vc_modchat > .vc_modchat {display: block;}
-		#messagebox.vc_eventchat > .vc_eventchat {display: block;}
-		#messagebox.vc_system > .vc_system {display: block;}
+		#messagebox.vc_localchat .vc_localchat 		{ display: block; }
+		#messagebox.vc_radio .vc_radio 				{ display: block; }
+		#messagebox.vc_warnings .vc_warnings  		{ display: block; }
+		#messagebox.vc_info .vc_info 				{ display: block; }
+		#messagebox.vc_deadchat .vc_deadchat  		{ display: block; }
+		#messagebox.vc_globalooc .vc_globalooc 		{ display: block; }
+		#messagebox.vc_adminpm .vc_adminpm 			{ display: block; }
+		#messagebox.vc_adminchat .vc_adminchat 		{ display: block; }
+		#messagebox.vc_modchat .vc_modchat 			{ display: block; }
+		#messagebox.vc_eventchat .vc_eventchat 		{ display: block; }
+		#messagebox.vc_system .vc_system 			{ display: block; }
 	</style>
 
 </head>
@@ -148,7 +148,9 @@
 
 		<!-- Messages box -->
 		<div v-show="!editing" id="messagebox" class="ui segment" :class="active_classes">
-			<div v-show="messages.length > showingnum"><span class='notice'>[ {{messages.length - showingnum}} previous messages hidden due to display settings. ]</span></div>
+			<div v-show="messages.length > showingnum" class="vc_system">
+				<span class='notice'>[ {{messages.length - showingnum}} previous messages hidden due to display settings. ]</span>
+			</div>
 			<transition-group name="msgsanim" tag="span" :css="animated">
 				<div v-for="message in shown_messages" :class="message.category" :key="message">
 					<span v-html="message.content"></span>
@@ -161,8 +163,6 @@
 	<!--
 		Tab: {{active_tab}}<br>
 		Classes: {{active_classes}}<br>
-		Editing: {{editing}}
-		Styles: {{styles}}
 	-->
 
 </div>
