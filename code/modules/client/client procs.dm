@@ -448,6 +448,21 @@ client/verb/character_setup()
 		return FALSE
 	return ..()
 
+/client/verb/reload_vchat()
+	set name = "Reload VChat"
+	set category = "OOC"
+
+	if(src.chatOutputLoadedAt > (world.time - 10 SECONDS))
+		alert(src, "You can only try to reload VChat every 10 seconds at most.")
+		return
+	winset(src, "htmloutput", "is-disabled=true")
+	src << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
+	qdel_null(src.chatOutput)
+	chatOutput = new /datum/chatOutput(src) //veechat
+	spawn()
+		chatOutput.start()
+	log_debug("[key_name(src)] reloaded VChat.")
+
 //This is for getipintel.net.
 //You're welcome to replace this proc with your own that does your own cool stuff.
 //Just set the client's ip_reputation var and make sure it makes sense with your config settings (higher numbers are worse results)

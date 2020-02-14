@@ -111,6 +111,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		return
 
 	loaded = TRUE
+	owner.chatOutputLoadedAt = world.time
 	winset(owner, "htmloutput", "is-disabled=false")
 	push_queue()
 	send_playerinfo()
