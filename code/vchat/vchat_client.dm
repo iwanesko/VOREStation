@@ -1,3 +1,5 @@
+//The 'V' is for 'VORE' but you can pretend it's for Vue.js if you really want.
+
 //These are sent to the client via browse_rsc() in advance so the HTML can access them.
 var/list/chatResources = list(
 	"code/vchat/js/polyfills.js", //Functions because IE is bad
@@ -5,7 +7,8 @@ var/list/chatResources = list(
 	"code/vchat/js/vue.js", //UI framework
 	"code/vchat/css/semantic.css", //UI framework
 	"code/vchat/css/vchat-font-embedded.css", //Mini icons file
-	"code/vchat/css/ss13styles.css" //Ingame styles
+	"code/vchat/css/ss13styles.css", //Ingame styles
+	"code/vchat/dog.gif" //A dog
 )
 
 // The to_chat() macro calls this proc

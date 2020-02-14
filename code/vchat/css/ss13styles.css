@@ -132,3 +132,18 @@ img.icon.bigicon		{max-height: 32px;}
 	opacity: 0;
 	transform: translateX(15px);
 }
+
+/* Dog mode */
+.woof {
+	background-color: rgba(255,255,255,0) !important;
+	background-image: url('dog.gif') !important;
+	background-size: cover !important;
+
+	transition: background-color 15s;
+}
+
+.woof div, .woof span {
+	background-color: rgba(0,0,0,0) !important;
+
+	transition: background-color 15s;
+}
