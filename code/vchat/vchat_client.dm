@@ -354,10 +354,10 @@ var/to_chat_src
 				DIRECT_OUTPUT(C, original_message)
 				return
 			
-			// Client still loading, put their messages in a queue
-			if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
-				C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = list("time" = time, "message" = message)
-				return
+			// // Client still loading, put their messages in a queue - Actually don't, logged already in database.
+			// if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
+			// 	C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = list("time" = time, "message" = message)
+			// 	return
 
 		var/list/tojson = list("time" = time, "message" = message);
 		target << output(jsEncode(tojson), "htmloutput:putmessage")

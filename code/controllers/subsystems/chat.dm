@@ -23,6 +23,8 @@ SUBSYSTEM_DEF(chat)
 		if(MC_TICK_CHECK)
 			return
 
+/datum/controller/subsystem/chat/stat_entry()
+	..("C:[msg_queue.len]")
 
 /datum/controller/subsystem/chat/proc/queue(target, time, message, handle_whitespace = TRUE)
 	if(!target || !message)
@@ -59,10 +61,10 @@ SUBSYSTEM_DEF(chat)
 				DIRECT_OUTPUT(C, original_message)
 				continue
 
-			// Client still loading, put their messages in a queue
-			if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
-				C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = messageStruct
-				continue
+			// // Client still loading, put their messages in a queue - Actually don't, logged already in database.
+			// if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
+			// 	C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = messageStruct
+			// 	continue
 
 			LAZYINITLIST(msg_queue[C])
 			msg_queue[C][++msg_queue[C].len] = messageStruct
@@ -76,10 +78,10 @@ SUBSYSTEM_DEF(chat)
 			DIRECT_OUTPUT(C, original_message)
 			return
 
-		// Client still loading, put their messages in a queue
-		if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
-			C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = messageStruct
-			return
+		// // Client still loading, put their messages in a queue - Actually don't, logged already in database.
+		// if(!C.chatOutput.loaded && C.chatOutput.message_queue && islist(C.chatOutput.message_queue))
+		// 	C.chatOutput.message_queue[++C.chatOutput.message_queue.len] = messageStruct
+		// 	return
 
 		LAZYINITLIST(msg_queue[C])
 		msg_queue[C][++msg_queue[C].len] = messageStruct
