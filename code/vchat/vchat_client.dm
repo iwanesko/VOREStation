@@ -87,11 +87,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		return
 
 	//Simple loading page. I wish Byond wasn't so terrible.
-	owner << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
-	sleep(5)
-	owner << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
-	sleep(1)
-
+	owner << browse(file2text('code/vchat/html/troubleshooting.html'), "window=htmloutput")
+	
 	//Attempt to actually push the files and HTML page into their cache and browser respectively. Loaded will be set by Topic() when the JS in the HTML fires it.
 	for(var/attempts in 1 to 5)
 		if(loaded) return

@@ -458,7 +458,7 @@ client/verb/character_setup()
 		alert(src, "You can only try to reload VChat every 10 seconds at most.")
 		return
 	winset(src, "htmloutput", "is-disabled=true")
-	src << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
+	src << browse(file2text('code/vchat/html/troubleshooting.html'), "window=htmloutput")
 	qdel_null(src.chatOutput)
 	chatOutput = new /datum/chatOutput(src) //veechat
 	spawn()
