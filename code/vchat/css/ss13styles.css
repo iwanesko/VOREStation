@@ -121,7 +121,8 @@ img.icon.bigicon		{max-height: 32px;}
 
 /* Zoom levels */
 .zoom_normal {
-	font-size: 1em;
+	font-size: 0.9em;
+	line-height: 1.35;
 }
 .zoom_normal img.icon {
 	/* max-height: 1.5rem; */
