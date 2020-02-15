@@ -1,4 +1,4 @@
-#define VCHAT_FILENAME "vchat.db"
+#define VCHAT_FILENAME "data/vchat.db"
 GLOBAL_DATUM(vchatdb, /database)
 
 //Boot up db file
@@ -6,7 +6,7 @@ GLOBAL_DATUM(vchatdb, /database)
 	//Cleanup previous if exists
 	fdel(VCHAT_FILENAME)
 	fdel(VCHAT_FILENAME+"-shm") //Shared memory, and
-	fdel(VCHAT_FILENAME+"-wal") //Write ahead. Only present on unclean stop.
+	fdel(VCHAT_FILENAME+"-wal") // write ahead. Only present on unclean stop.
 
 	//Create a new one
 	GLOB.vchatdb = new(VCHAT_FILENAME)
