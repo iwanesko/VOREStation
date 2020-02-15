@@ -385,7 +385,7 @@ function start_vue() {
 					event.stopPropagation();
 					event.preventDefault ? event.preventDefault() : (event.returnValue = false); //The second one is the weird IE method.
 
-					var href = ele.href;
+					var href = ele.getAttribute('href'); // Gets actual href without transformation into fully qualified URL
 					
 					if (href[0] == '?' || (href.length >= 8 && href.substring(0,8) == "byond://")) {
 						window.location = href; //Internal byond link
