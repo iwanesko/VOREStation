@@ -121,19 +121,21 @@ img.icon.bigicon		{max-height: 32px;}
 
 /* Zoom levels */
 .zoom_normal {
-	/* font-size: whatever; */
+	font-size: 1em;
 }
 .zoom_normal img.icon {
-	/* vertical-align: middle; max-height: 1.5rem; */
+	/* max-height: 1.5rem; */
 }
 .zoom_more {
-	font-size: larger;
+	font-size: 1.2em;
+	line-height: 1.4;
 }
 .zoom_more img.icon {
 	max-height: 2em;
 }
 .zoom_less {
-	font-size: smaller;
+	font-size: 0.8em;
+	line-height: 1.2;
 }
 .zoom_less img.icon {
 	max-height: 1em;
