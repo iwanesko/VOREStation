@@ -147,7 +147,7 @@
 		</div>
 
 		<!-- Messages box -->
-		<div v-show="!editing" id="messagebox" class="ui segment" :class="active_classes">
+		<div v-show="!editing" id="messagebox" class="ui segment" :class="active_classes" @click="click_message">
 			<div v-show="messages.length > showingnum" class="vc_system">
 				<span class='notice'>[ {{messages.length - showingnum}} previous messages hidden due to display settings. ]</span>
 			</div>

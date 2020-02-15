@@ -379,6 +379,21 @@ function start_vue() {
 					event.target.click();
 				}
 			},
+			click_message: function(event) {
+				let ele = event.target;
+				if(ele.tagName === "A") {
+					event.stopPropagation();
+					event.preventDefault ? event.preventDefault() : (event.returnValue = false); //The second one is the weird IE method.
+
+					var href = ele.href;
+					
+					if (href[0] == '?' || (href.length >= 8 && href.substring(0,8) == "byond://")) {
+						window.location = href; //Internal byond link
+					} else { //It's an external link
+						window.location = "byond://?action=openLink&link="+encodeURIComponent(href);
+					}
+				}
+			},
 			//Derive a vchat category based on css classes
 			get_category: function(message) {
 				if(!vchat_state.ready) {
