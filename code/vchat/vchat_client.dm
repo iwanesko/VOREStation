@@ -56,7 +56,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	. = ..()
 
 //Called from client/New() in a spawn()
-/datum/chatOutput/proc/start()
+/datum/chatOutput/proc/start(var/online = FALSE)
 	if(!owner)
 		qdel(src)
 		return FALSE
@@ -75,12 +75,12 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		done_loading()
 
 	else
-		load()
+		load(online)
 
 	return TRUE
 
 //Attempts to actually load the HTML page into the client's UI
-/datum/chatOutput/proc/load()
+/datum/chatOutput/proc/load(var/online = FALSE)
 	set waitfor = FALSE
 	if(!owner)
 		qdel(src)
@@ -99,7 +99,10 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		for(var/subattempts in 1 to 3)
 			if(loaded) return
 			
-			owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
+			if(online)
+				owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
+			else
+				owner << browse(file2text('code/vchat/html/htmlchat.html'), "window=htmloutput")
 			log_debug("Sent [owner] the VChat HTML, attempt [subattempts], waiting 30 seconds.")
 			sleep(30 SECONDS) //This can be REALLY slow sometimes, depending on client and if the server is busy or whatever.
 			
