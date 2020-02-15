@@ -5,6 +5,8 @@ GLOBAL_DATUM(vchatdb, /database)
 /proc/init_vchat()
 	//Cleanup previous if exists
 	fdel(VCHAT_FILENAME)
+	fdel(VCHAT_FILENAME+"-shm") //Shared memory, and
+	fdel(VCHAT_FILENAME+"-wal") //Write ahead. Only present on unclean stop.
 
 	//Create a new one
 	GLOB.vchatdb = new(VCHAT_FILENAME)
