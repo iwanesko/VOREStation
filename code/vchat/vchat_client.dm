@@ -92,17 +92,21 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 
 	//Attempt to actually push the files and HTML page into their cache and browser respectively. Loaded will be set by Topic() when the JS in the HTML fires it.
 	for(var/attempts in 1 to 5)
+		if(loaded) return
+
 		for(var/asset in global.chatResources)
 			owner << browse_rsc(file(asset))
 
 		for(var/subattempts in 1 to 3)
+			if(loaded) return
+			
 			owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
-			sleep(100)
+			sleep(5 SECONDS)
+			
 			if(!owner)
 				qdel(src)
 				return
-			if(loaded)
-				return
+			
 
 //var/list/joins = list() //Just for testing with the below
 //Called by Topic, when the JS in the HTML page finishes loading
