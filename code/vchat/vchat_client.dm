@@ -4,8 +4,8 @@
 var/list/chatResources = list(
 	"code/vchat/js/polyfills.js", //Functions because IE is bad
 	"code/vchat/js/vchat.js", //Main VChat stuff
-	"code/vchat/js/vue.js", //UI framework
-	"code/vchat/css/semantic.css", //UI framework
+	"code/vchat/js/vue.min.js", //UI framework
+	"code/vchat/css/semantic.min.css", //UI framework
 	"code/vchat/css/vchat-font-embedded.css", //Mini icons file
 	"code/vchat/css/ss13styles.css", //Ingame styles
 	"code/vchat/dog.gif" //A dog

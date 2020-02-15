@@ -5,62 +5,15 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-	<!-- Important scripts -->
-	<script type="text/javascript" src="polyfills.js"></script>
-	<script type="text/javascript" src="evercookie.js"></script>
-	<script type="text/javascript" src="vue.js"></script>
-	<script type="text/javascript" src="vchat.js"></script>
-
 	<!-- Styles -->
-	<link rel="stylesheet" type="text/css" href="semantic.css" />
+	<link rel="stylesheet" type="text/css" href="semantic.min.css" />
 	<link rel="stylesheet" type="text/css" href="vchat-font-embedded.css" />
 	<link rel="stylesheet" type="text/css" href="ss13styles.css" />
 
-	
-	<!-- <script type="text/javascript" src="firebug-lite-debug.js"></script> -->
-	
-	<style>
-		#contentbox {
-			margin-top: 3rem; /* Make room for the fixed top menu */
-		}
-
-		.menu, .item {
-			padding-top: 0.2em !important;
-			padding-bottom: 0.2em !important;
-		}
-
-		body.inverted {
-			background-color: #111111;
-		}
-
-		.blinkwarn {
-			color: #FF0000;
-			animation: blink-animation 1s steps(5, start) infinite;
-		}
-
-		@keyframes blink-animation {
-			to {
-				visibility: hidden;
-			}
-		}
-
-		/* The chat message display classes */
-		#messagebox div 							{ display: none; } /* Hide messages by default */
-		#messagebox.vc_showall div 					{ display: block; } /* Unless we have vc_showall */
-		
-		#messagebox.vc_localchat .vc_localchat 		{ display: block; }
-		#messagebox.vc_radio .vc_radio 				{ display: block; }
-		#messagebox.vc_warnings .vc_warnings  		{ display: block; }
-		#messagebox.vc_info .vc_info 				{ display: block; }
-		#messagebox.vc_deadchat .vc_deadchat  		{ display: block; }
-		#messagebox.vc_globalooc .vc_globalooc 		{ display: block; }
-		#messagebox.vc_adminpm .vc_adminpm 			{ display: block; }
-		#messagebox.vc_adminchat .vc_adminchat 		{ display: block; }
-		#messagebox.vc_modchat .vc_modchat 			{ display: block; }
-		#messagebox.vc_eventchat .vc_eventchat 		{ display: block; }
-		#messagebox.vc_system .vc_system 			{ display: block; }
-	</style>
-
+	<!-- Important scripts -->
+	<script type="text/javascript" src="polyfills.js"></script>
+	<script type="text/javascript" src="vue.min.js"></script>
+	<script type="text/javascript" src="vchat.js"></script>
 </head>
 
 <body>
