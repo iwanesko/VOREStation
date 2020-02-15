@@ -76,7 +76,7 @@ function start_vue() {
 			crushing: true, //Combine similar messages
 			showingnum: 200, //How many messages to show
 			animated: true, //Small CSS animations for new messages
-			fontsize: "inherit", //Font size nudging
+			fontsize: "zoom_normal", //Font size nudging
 
 			//The table to map game css classes to our vchat classes
 			type_table: [
@@ -269,7 +269,7 @@ function start_vue() {
 				this.crushing = get_storage("crushing", true);
 				this.showingnum = get_storage("showingnum", 200);
 				this.animated = get_storage("animated", true);
-				this.fontsize = get_storage("fontsize", 'inherit');
+				this.fontsize = get_storage("fontsize", 'zoom_normal');
 			},
 			//Change to another tab
 			switchtab: function(tab) {

@@ -117,6 +117,26 @@ h1.alert, h2.alert		{color: #000000;}
 img.icon				{vertical-align: middle; max-height: 1.5rem;}
 img.icon.bigicon		{max-height: 32px;}
 
+/* Zoom levels */
+.zoom_normal {
+	/* font-size: whatever; */
+}
+.zoom_normal img.icon {
+	/* vertical-align: middle; max-height: 1.5rem; */
+}
+.zoom_more {
+	font-size: larger;
+}
+.zoom_more img.icon {
+	max-height: 2em;
+}
+.zoom_less {
+	font-size: smaller;
+}
+.zoom_less img.icon {
+	max-height: 1em;
+}
+
 /* Debug Logs */
 .debug_error					{color:#FF0000; font-weight:bold}
 .debug_warning					{color:#FF0000;}
