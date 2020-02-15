@@ -86,6 +86,11 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return
 
+	//Simple loading page
+	sleep(1)
+	owner << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
+	sleep(1)
+
 	//Perform sqllite setup/load
 	load_database()
 
