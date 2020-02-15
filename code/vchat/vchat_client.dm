@@ -7,8 +7,7 @@ var/list/chatResources = list(
 	"code/vchat/js/vue.min.js", //UI framework
 	"code/vchat/css/semantic.min.css", //UI framework
 	"code/vchat/css/vchat-font-embedded.css", //Mini icons file
-	"code/vchat/css/ss13styles.css", //Ingame styles
-	"code/vchat/dog.gif" //A dog
+	"code/vchat/css/ss13styles.css" //Ingame styles
 )
 
 // The to_chat() macro calls this proc
@@ -101,7 +100,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 			if(loaded) return
 			
 			owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
-			sleep(5 SECONDS)
+			log_debug("Sent [owner] the VChat HTML, attempt [subattempts], waiting 30 seconds.")
+			sleep(30 SECONDS) //This can be REALLY slow sometimes, depending on client and if the server is busy or whatever.
 			
 			if(!owner)
 				qdel(src)
