@@ -368,6 +368,17 @@ function start_vue() {
 				};
 				this.messages.push(newmessage);
 			},
+			on_mouseup: function(event) {
+				// Focus map window on mouseup so hotkeys work.  Exception for if they highlighted text or clicked an input.
+				let ele = event.target;
+				let textSelected = ('getSelection' in window) && window.getSelection().isCollapsed === false;
+				if (!textSelected && !(ele && (ele.tagName === 'INPUT' || ele.tagName === 'TEXTAREA'))) {
+					focusMapWindow();
+					// Okay focusing map window appears to prevent click event from being fired.  So lets do it ourselves.
+					event.preventDefault();
+					event.target.click();
+				}
+			},
 			//Derive a vchat category based on css classes
 			get_category: function(message) {
 				if(!vchat_state.ready) {
@@ -477,6 +488,11 @@ function system_message(message) {
 //This is the other direction of communication, to push a Topic message back
 function push_Topic(topic_uri) {
 	window.location = '?_src_=chat&proc=' + topic_uri; //Yes that's really how it works.
+}
+
+//Tells byond client to focus the main map window.
+function focusMapWindow() {
+	window.location = 'byond://winset?mapwindow.map.focus=true';
 }
 
 //A side-channel to send events over that aren't just chat messages, if necessary.
