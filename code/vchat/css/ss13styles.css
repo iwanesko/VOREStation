@@ -12,7 +12,7 @@
 
 .prefix					{font-weight: bold;}
 .log_message			{color: #386AFF; font-weight: bold;}
-.inverted .message		{color: #386AFF; font-weight: bold;}
+/*.inverted .message		{color: #386AFF; font-weight: bold;}*/
 
 /* OOC */
 .ooc					{font-weight: bold;}
