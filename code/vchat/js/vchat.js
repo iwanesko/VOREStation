@@ -76,6 +76,7 @@ function start_vue() {
 			crushing: true, //Combine similar messages
 			showingnum: 200, //How many messages to show
 			animated: true, //Small CSS animations for new messages
+			fontsize: "inherit", //Font size nudging
 
 			//The table to map game css classes to our vchat classes
 			type_table: [
@@ -210,6 +211,9 @@ function start_vue() {
 			animated: function (newSetting) {
 				set_storage("animated",newSetting);
 			},
+			fontsize: function (newSetting) {
+				set_storage("fontsize",newSetting);
+			},
 			showingnum: function (newSetting, oldSetting) {
 				if(!isFinite(newSetting)) {
 					this.showingnum = oldSetting;
@@ -265,6 +269,7 @@ function start_vue() {
 				this.crushing = get_storage("crushing", true);
 				this.showingnum = get_storage("showingnum", 200);
 				this.animated = get_storage("animated", true);
+				this.fontsize = get_storage("fontsize", 'inherit');
 			},
 			//Change to another tab
 			switchtab: function(tab) {
@@ -570,7 +575,7 @@ function get_localstorage(key, deffo) {
 	let value = localstorage.getItem(vchat_opts.cookiePrefix+key);
 	
 	//localstorage only stores strings.
-	if(value == "null" || value === null) {
+	if(value === "null" || value === null) {
 		value = deffo;
 	} else if(value === "true") {
 		value = true;

@@ -21,11 +21,12 @@
 	
 	<style>
 		#contentbox {
-			margin-top: 4rem; /* Make room for the fixed top menu */
+			margin-top: 3rem; /* Make room for the fixed top menu */
 		}
 
-		.item {
-			cursor: pointer;
+		.menu, .item {
+			padding-top: 0.2em !important;
+			padding-bottom: 0.2em !important;
 		}
 
 		body.inverted {
@@ -134,13 +135,36 @@
 										<input type="checkbox" id="combining" v-model="animated"><label for="animated">Animate Messages</label>
 									</div>
 								</div>
+							</div>
+							<div class="inline fields">
+								<label>Font Size</label>
 								<div class="field">
-									<label :class="{ inverted: inverted }"># Displayed Messages</label>
-									<input :class="{ inverted: inverted }" type="number" name="showingnum" placeholder="200" title="Will affect performance!" v-model.lazy.number="showingnum" required style="width: 5em;">
+									<div class="ui radio checkbox">
+										<input type="radio" id="fssmall" name="fontsize" v-model="fontsize" value="smaller">
+										<label for="fssmall">Small</label>
+									</div>
+								</div>
+								<div class="field">
+									<div class="ui radio checkbox">
+										<input type="radio" id="fsstd" name="fontsize" v-model="fontsize" value="inherit">
+										<label for="fsstd">Standard</label>
+									</div>
+								</div>
+								<div class="field">
+									<div class="ui radio checkbox">
+										<input type="radio" id="fslarge" name="fontsize" v-model="fontsize" value="larger">
+										<label for="fslarge">Large</label>
+									</div>
+								</div>
+							</div>
+							<div class="inline fields">
+								<div class="field">
+									<label># Shown Messages</label>
+									<input :class="{ inverted: inverted }" type="number" name="showingnum" placeholder="200" title="Will affect performance!" v-model.lazy.number="showingnum" required style="width: 5em; padding: 0.1em;">
 								</div>
 							</div>
 						</div>
-						<button class="ui button" :class="{ inverted: inverted }" @click="save_chatlog">Save Chatlog</button>
+						<button class="ui button" :class="{ inverted: inverted }" @click="save_chatlog">Export Chatlog</button>
 					</div>
 				</div>
 			</div>
@@ -153,7 +177,7 @@
 			</div>
 			<transition-group name="msgsanim" tag="span" :css="animated">
 				<div v-for="message in shown_messages" :class="message.category" :key="message">
-					<span v-html="message.content"></span>
+					<span v-html="message.content" :style="{ fontSize: fontsize }"></span>
 					<span v-show="message.repeats > 1" class="ui grey circular label">x{{message.repeats}}</span>
 				</div>
 			</transition-group>
@@ -163,7 +187,9 @@
 	<!--
 		Tab: {{active_tab}}<br>
 		Classes: {{active_classes}}<br>
+		Fontsize: {{fontsize}}<br>
 	-->
+	
 
 </div>
 </body>
