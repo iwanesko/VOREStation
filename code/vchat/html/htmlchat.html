@@ -176,7 +176,7 @@
 				<span class='notice'>[ {{messages.length - showingnum}} previous messages hidden due to display settings. ]</span>
 			</div>
 			<transition-group name="msgsanim" tag="span" :css="animated">
-				<div v-for="message in shown_messages" :class="[message.category, fontsize]" :key="message">
+				<div v-for="message in shown_messages" :class="[message.category, fontsize]" :key="message.id">
 					<span v-html="message.content"></span>
 					<span v-show="message.repeats > 1" class="ui grey circular label">x{{message.repeats}}</span>
 				</div>
@@ -192,14 +192,12 @@
 	
 
 </div>
-</body>
 
-<script>
+<script type="text/javascript">
 	//Document Ready
 	(function(){
 		start_vchat();
 	})();
-
 </script>
-
+</body>
 </html>

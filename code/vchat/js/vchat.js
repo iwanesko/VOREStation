@@ -180,6 +180,7 @@ function start_vue() {
 				var stringymessages = JSON.stringify(varthis.messages);
 				var unstringy = JSON.parse(stringymessages);
 				unstringy.forEach( function(message) {
+					message.id = (varthis.messages.length + 1);
 					varthis.messages.push(message);	
 				});
 				varthis.internal_message("Now have " + varthis.messages.length + " messages in array.");
@@ -373,6 +374,7 @@ function start_vue() {
 				}
 
 				//Append to vue's messages
+				newmessage.id = (this.messages.length + 1);
 				this.messages.push(newmessage);
 			},
 			//Push an internally generated message into our array
@@ -382,6 +384,7 @@ function start_vue() {
 					category: "vc_system",
 					content: "<span class='notice'>[VChat Internal] " + message + "</span>"
 				};
+				newmessage.id = (this.messages.length + 1);
 				this.messages.push(newmessage);
 			},
 			on_mouseup: function(event) {
