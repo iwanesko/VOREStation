@@ -70,6 +70,7 @@ function start_vue() {
 			paused: false, //Autoscrolling
 			latency: 0, //Not necessarily network latency, since the game server has to align the responses into ticks
 			ext_styles: "", //Styles for chat downloaded files
+			is_admin: false,
 
 			//Settings
 			inverted: false, //Dark mode
@@ -84,61 +85,71 @@ function start_vue() {
 					matches: ".say, .emote",
 					becomes: "vc_localchat",
 					pretty: "Local Chat",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".alert, .syndradio, .centradio, .airadio, .entradio, .comradio, .secradio, .engradio, .medradio, .sciradio, .supradio, .srvradio, .expradio, .radio, .deptradio, .newscaster",
 					becomes: "vc_radio",
 					pretty: "Radio Comms",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".notice, .adminnotice, .info, .sinister, .cult",
 					becomes: "vc_info",
 					pretty: "Notices",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".critical, .danger, .userdanger, .warning, .italics",
 					becomes: "vc_warnings",
 					pretty: "Warnings",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".deadsay",
 					becomes: "vc_deadchat",
 					pretty: "Deadchat",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".ooc:not(.looc)",
 					becomes: "vc_globalooc",
 					pretty: "Global OOC",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".pm",
 					becomes: "vc_adminpm",
 					pretty: "Admin PMs",
-					required: false
+					required: false,
+					admin: false
 				},
 				{
 					matches: ".admin_channel",
 					becomes: "vc_adminchat",
 					pretty: "Admin Chat",
-					required: false
+					required: false,
+					admin: true
 				},
 				{
 					matches: ".mod_channel",
 					becomes: "vc_modchat",
 					pretty: "Mod Chat",
-					required: false
+					required: false,
+					admin: true
 				},
 				{
 					matches: ".event_channel",
 					becomes: "vc_eventchat",
 					pretty: "Event Chat",
-					required: false
+					required: false,
+					admin: true
 				},
 				{
 					matches: ".ooc.looc, .ooc .looc", //Dumb game
@@ -250,8 +261,8 @@ function start_vue() {
 			ping_classes: function() {
 				if(this.latency === 0) { return "grey"; }
 				else if(this.latency < 0 ) {return "red"; }
-				else if(this.latency <= 150) { return "green"; }
-				else if(this.latency <= 300) { return "yellow"; }
+				else if(this.latency <= 200) { return "green"; }
+				else if(this.latency <= 400) { return "yellow"; }
 				else { return "red"; }
 			},
 			shown_messages: function() {
@@ -534,6 +545,7 @@ function get_event(event) {
 		//They provided byond data.
 		case 'byond_player':
 			send_client_data();
+			vueapp.is_admin = (parsed_event.admin === 'true');
 			vchat_state.byond_ip = parsed_event.address;
 			vchat_state.byond_cid = parsed_event.cid;
 			vchat_state.byond_ckey = parsed_event.ckey;

@@ -45,7 +45,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 
 	var/last_topic_time = 0
 	var/too_many_topics = 0
-	var/topic_spam_limit = 5 //Just enough to get over the startup and such
+	var/topic_spam_limit = 10 //Just enough to get over the startup and such
 
 /datum/chatOutput/New(client/C)
 	. = ..()
@@ -192,7 +192,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return
 
-	var/list/playerinfo = list("evttype" = "byond_player", "cid" = owner.computer_id, "ckey" = owner.ckey, "address" = owner.address)
+	var/list/playerinfo = list("evttype" = "byond_player", "cid" = owner.computer_id, "ckey" = owner.ckey, "address" = owner.address, "admin" = owner.holder ? "true" : "false")
 	send_event(playerinfo)
 
 //Ugh byond doesn't handle UTF-8 well so we have to do this.
@@ -296,7 +296,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	if (!bicon_cache[key]) // Doesn't exist, make it.
 		var/icon/I = icon(A.icon, A.icon_state, SOUTH, 1)
 		if (ishuman(obj))
-			I = getFlatIcon(obj,SOUTH) //Ugly
+			I = getFlatIcon(obj) //Ugly
 		bicon_cache[key] = icon2base64(I, key)
 	if(use_class)
 		class = "class='icon [A.icon_state] [custom_classes]'"
