@@ -1,3 +1,5 @@
+#define BACKLOG_LENGTH 20 MINUTES
+
 //The 'V' is for 'VORE' but you can pretend it's for Vue.js if you really want.
 
 //These are sent to the client via browse_rsc() in advance so the HTML can access them.
@@ -37,26 +39,21 @@ var/vchat_loading_page = {"
 "}
 
 // The to_chat() macro calls this proc
-/proc/__to_chat(var/target, var/message, var/dblog = TRUE)
+/proc/__to_chat(var/target, var/message)
 	// First do logging in database
-	if(dblog)
-		if(isclient(target))
-			var/client/C = target
-			vchat_add_message(C.ckey,message)
-		else if(ismob(target))
-			var/mob/M = target
-			if(M.ckey)
-				vchat_add_message(M.ckey,message)
+	if(isclient(target))
+		var/client/C = target
+		vchat_add_message(C.ckey,message)
+	else if(ismob(target))
+		var/mob/M = target
+		if(M.ckey)
+			vchat_add_message(M.ckey,message)
 
 	// Now lets either queue it for sending, or send it right now
 	if(Master.current_runlevel == RUNLEVEL_INIT || !SSchat?.subsystem_initialized)
 		to_chat_immediate(target, world.time, message)
 	else
 		SSchat.queue(target, world.time, message)
-
-//Should match the value set in the browser js
-#define MAX_COOKIE_LENGTH 5
-#define BACKLOG_LENGTH 20 MINUTES
 
 //This is used to convert icons to base64 <image> strings, because byond stores icons in base64 in savefiles.
 GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of icons for the browser output
@@ -184,11 +181,11 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	if(usr.client != owner)
 		return 1
 
-	if(last_topic_time > (world.time - 30))
+	if(last_topic_time > (world.time - 3 SECONDS))
 		too_many_topics++
 		if(too_many_topics >= topic_spam_limit)
 			log_and_message_admins("Kicking [key_name(owner)] - VChat Topic() spam")
-			to_chat(owner,"<span class='danger'>You have been kicked due to spamming VChat Topic(). Don't just spam settings changes.")
+			to_chat(owner,"<span class='danger'>You have been kicked due to VChat sending too many messages to the server. Try reconnecting.")
 			qdel(owner)
 			qdel(src)
 			return
@@ -333,4 +330,4 @@ var/to_chat_src
 		var/list/tojson = list("time" = time, "message" = message);
 		target << output(jsEncode(tojson), "htmloutput:putmessage")
 
-#undef MAX_COOKIE_LENGTH
+#undef BACKLOG_LENGTH
