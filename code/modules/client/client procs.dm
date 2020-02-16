@@ -460,7 +460,9 @@ client/verb/character_setup()
 	
 	//Log, disable
 	log_debug("[key_name(src)] reloaded VChat.")
-	winset(src, "htmloutput", "is-disabled=true")
+	winshow(src, "htmloutput", FALSE)
+	winshow(src, "oldoutput", FALSE)
+	winshow(src, "chatloadlabel", TRUE)
 	
 	//The hard way
 	qdel_null(src.chatOutput)

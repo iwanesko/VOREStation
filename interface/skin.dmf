@@ -1225,7 +1225,6 @@ window "outputwindow"
 		anchor2 = 100,100
 		background-color = none
 		is-visible = false
-		is-disabled = true
 		saved-params = ""
 		auto-format = false
 	elem "oldoutput"
@@ -1237,6 +1236,7 @@ window "outputwindow"
 		background-color = none
 		text-color = #000000
 		background-color = #ffffff
+		is-visible = false
 		is-default = true
 		style = ".system {color:#FF0000;}"
 		max-lines = 0

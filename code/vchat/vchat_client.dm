@@ -94,7 +94,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return FALSE
 
-	winset(owner, "chatloadlabel", "is-visible=true")
+	winshow(owner, "chatloadlabel", TRUE)
 
 	if(winget(owner, "htmloutput", "is-disabled") == "false")
 		done_loading()
@@ -111,7 +111,6 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return
 
-	DIRECT_OUTPUT(owner, "Loading VChat... please wait.\nIf you see this for more than a minute, try the OOC verb 'Reload VChat', or reconnecting.\nSometimes when resources are being cached by your client, it can take a while.")
 	//Shove all the assets at them
 	for(var/filename in GLOB.vchatFiles)
 		owner << browse_rsc(file(filename))
@@ -135,9 +134,9 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	
 	load_database()
 
-	winset(owner, "oldoutput", "is-disabled=true;is-visible=false")
-	winset(owner, "htmloutput", "is-visible=true;is-disabled=false")
-	winset(owner, "chatloadlabel", "is-visible=false")
+	winshow(owner, "oldoutput", FALSE)
+	winshow(owner, "htmloutput", TRUE)
+	winset(owner, "chatloadlabel", FALSE)
 	
 //Perform DB shenanigans
 /datum/chatOutput/proc/load_database()
