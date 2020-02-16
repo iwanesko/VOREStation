@@ -67,6 +67,11 @@ function start_vchat() {
 	//Inform byond we're done
 	vchat_state.ready = true;
 	push_Topic('done_loading');
+
+	//I'll do my own winsets
+	doWinset("htmloutput", {"is-visible": true});
+	doWinset("oldoutput", {"is-visible": false});
+	doWinset("chatloadlabel", {"is-visible": false});
 	
 	//Commence the pingening
 	send_ping();

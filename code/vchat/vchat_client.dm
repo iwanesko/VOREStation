@@ -9,7 +9,7 @@ GLOBAL_LIST_INIT(vchatFiles, list(
 	"code/vchat/css/ss13styles.css",
 	"code/vchat/js/polyfills.js",
 	"code/vchat/js/vue.min.js",
-	"code/vchat/js/vchat.js"	
+	"code/vchat/js/vchat.js"
 ))
 
 GLOBAL_VAR_INIT(vchat_loading_page, {"
@@ -74,10 +74,19 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	. = ..()
 
 	owner = C
+	update_vis()
 
 /datum/chatOutput/Destroy()
 	owner = null
 	. = ..()
+
+/datum/chatOutput/proc/update_vis()
+	if(!loaded && !broken)
+		winset(owner, null, "outputwindow.htmloutput.is-visible=false;outputwindow.oldoutput.is-visible=false;outputwindow.chatloadlabel.is-visible=true")
+	else if(broken)
+		winset(owner, null, "outputwindow.htmloutput.is-visible=false;outputwindow.oldoutput.is-visible=true;outputwindow.chatloadlabel.is-visible=false")
+	else if(loaded)
+		return //It can do it's own winsets from inside the JS if it's working.
 
 //Shove all the assets at them
 /datum/chatOutput/proc/send_resources()
@@ -110,20 +119,18 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 
 //Attempts to actually load the HTML page into the client's UI
 /datum/chatOutput/proc/load()
-	set waitfor = FALSE
 	if(!owner)
 		qdel(src)
 		return
 
-	winshow(owner, "oldoutput", FALSE)
-	winshow(owner, "htmloutput", FALSE)
-
 	owner << browse(file2text("code/vchat/html/vchat.html"), "window=htmloutput")
 	
 	//Check back later
-	sleep(60 SECONDS)
-	if(!loaded)
-		become_broken()
+	spawn(60 SECONDS)
+		if(!src)
+			return
+		if(!src.loaded)
+			src.become_broken()
 
 //var/list/joins = list() //Just for testing with the below
 //Called by Topic, when the JS in the HTML page finishes loading
@@ -134,13 +141,11 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	loaded = TRUE
 	broken = FALSE
 	owner.chatOutputLoadedAt = world.time
-	send_playerinfo()
 	
-	load_database()
+	//update_vis() //It does it's own winsets
 
-	winshow(owner, "oldoutput", FALSE)
-	winshow(owner, "htmloutput", TRUE)
-	winshow(owner, "chatloadlabel", FALSE)
+	send_playerinfo()
+	load_database()
 	
 //Perform DB shenanigans
 /datum/chatOutput/proc/load_database()
@@ -155,12 +160,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	broken = TRUE
 	loaded = FALSE
 	
-	winset(owner, "htmloutput", "is-visible=false;is-disabled=true")
-	winset(owner, "oldoutput", "is-disabled=false;is-visible=true")
-	winset(owner, "chatloadlabel", "is-visible=false")
+	update_vis()
 	
-	load_database() //Give them history anyway
-
 	spawn()
 		alert(owner,"VChat didn't load after some time. Switching to use oldchat as a fallback. Try using 'Reload VChat' verb in OOC verbs, or reconnecting to try again.")
 	
