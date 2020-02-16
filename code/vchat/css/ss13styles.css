@@ -1,6 +1,8 @@
 /* VChat Styles */
 #contentbox {
 	margin-top: 3rem; /* Make room for the fixed top menu */
+	overflow-wrap: break-word;
+	word-wrap: break-word; /* IE, blah */
 }
 
 .menu, .item {
