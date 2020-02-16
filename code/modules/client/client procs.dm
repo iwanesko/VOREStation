@@ -454,16 +454,32 @@ client/verb/character_setup()
 	set name = "Reload VChat"
 	set category = "OOC"
 
+	//Timing
 	if(src.chatOutputLoadedAt > (world.time - 10 SECONDS))
 		alert(src, "You can only try to reload VChat every 10 seconds at most.")
 		return
+	
+	//Log, disable
+	log_debug("[key_name(src)] reloaded VChat.")
 	winset(src, "htmloutput", "is-disabled=true")
+	
+	//Loading screen (online)
 	src << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
+	
+	//The easy way
+	if(src.chatOutput)
+		chatOutput.loaded = FALSE
+		chatOutput.start(online = TRUE)
+		sleep(10)
+		if(chatOutput.loaded)
+			return
+	
+	//The hard way
 	qdel_null(src.chatOutput)
 	chatOutput = new /datum/chatOutput(src) //veechat
 	spawn()
 		chatOutput.start(online = TRUE)
-	log_debug("[key_name(src)] reloaded VChat.")
+	
 
 //This is for getipintel.net.
 //You're welcome to replace this proc with your own that does your own cool stuff.

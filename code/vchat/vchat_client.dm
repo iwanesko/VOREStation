@@ -37,9 +37,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 //The main object attached to clients, created when they connect, and has start() called on it in client/New()
 /datum/chatOutput
 	var/client/owner = null
-	var/loaded = 0
+	var/loaded = FALSE
 	var/list/message_queue = list()
-	var/cookieSent = 0
 	var/broken = FALSE
 
 	var/last_topic_time = 0
@@ -88,6 +87,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 
 	//Simple loading page. I wish Byond wasn't so terrible.
 	owner << browse(file2text('code/vchat/html/troubleshooting.html'), "window=htmloutput")
+	sleep(5 SECONDS)
+	owner << browse(file2text('code/vchat/html/troubleshooting.html'), "window=htmloutput")
 	
 	//Attempt to actually push the files and HTML page into their cache and browser respectively. Loaded will be set by Topic() when the JS in the HTML fires it.
 	for(var/attempts in 1 to 5)
@@ -104,7 +105,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 			else
 				owner << browse(file2text('code/vchat/html/htmlchat.html'), "window=htmloutput")
 			log_debug("Sent [owner] the VChat HTML, attempt [subattempts], waiting 30 seconds.")
-			sleep(30 SECONDS) //This can be REALLY slow sometimes, depending on client and if the server is busy or whatever.
+			sleep(10 SECONDS) //This can be REALLY slow sometimes, depending on client and if the server is busy or whatever.
 			
 			if(!owner)
 				qdel(src)
@@ -125,62 +126,6 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	spawn()
 		load_database()
 		push_queue()
-
-	/*
-	spawn(20)
-		if(owner.ckey in joins)
-			return
-		joins += owner.ckey
-		to_chat(owner,"<span class='game say'><b>Test Person</b> says, \"Testing say message.\"</span>")
-		to_chat(owner,"<span class='notice'>Testing notice message.</span>")
-		to_chat(owner,"<span class='danger'>Testing danger message.</span>")
-		to_chat(owner,"<span class='secradio'>\[Security\] <b>Secu Person</b> says, \"Testing radio message.\"</span>")
-		to_chat(owner,"<span class='ooc'><span class='everyone'>Testing OOC message.</span></span>")
-		to_chat(owner,"<span class='ooc'><span class='looc'>Testing LOOC message.</span></span>") //Yeah that's really how the game does it
-		to_chat(owner,"<span class='admin_channel'>Testing asay message.</span>")
-
-		to_chat(owner,"<span class='game say'><b>Test Person</b> says, \"Testing say message 2.\"</span>")
-		to_chat(owner,"<span class='notice'>Testing notice message 2.</span>")
-		to_chat(owner,"<span class='danger'>Testing danger message 2.</span>")
-		to_chat(owner,"<span class='secradio'>\[Security\] <b>Secu Person</b> says, \"Testing radio message 2\".</span>")
-		to_chat(owner,"<span class='ooc'><span class='everyone'>Testing OOC message 2.</span></span>")
-		to_chat(owner,"<span class='ooc'><span class='looc'>Testing LOOC message 2.</span></span>")
-		to_chat(owner,"<span class='admin_channel'>Testing asay message 2.</span>")
-
-		to_chat(owner,"<span class='game say'><b>Test Person</b> says, \"Testing say message 3.\"</span>")
-		to_chat(owner,"<span class='notice'>Testing notice message 3.</span>")
-		to_chat(owner,"<span class='danger'>Testing danger message 3.</span>")
-		to_chat(owner,"<span class='secradio'>\[Security\] <b>Secu Person</b> says, \"Testing radio message 3\".</span>")
-		to_chat(owner,"<span class='ooc'><span class='everyone'>Testing OOC message 3.</span></span>")
-		to_chat(owner,"<span class='ooc'><span class='looc'>Testing LOOC message 3.</span></span>")
-		to_chat(owner,"<span class='admin_channel'>Testing asay message 3.</span>")
-
-		to_chat(owner,"<span class='game say'><b>Test Person</b> says, \"Testing say message 4.\"</span>")
-		to_chat(owner,"<span class='notice'>Testing notice message 4.</span>")
-		to_chat(owner,"<span class='danger'>Testing danger message 4.</span>")
-		to_chat(owner,"<span class='secradio'>\[Security\] <b>Secu Person</b> says, \"Testing radio message 4\".</span>")
-		to_chat(owner,"<span class='ooc'><span class='everyone'>Testing OOC message 4.</span></span>")
-		to_chat(owner,"<span class='ooc'><span class='looc'>Testing LOOC message 4.</span></span>")
-		to_chat(owner,"<span class='admin_channel'>Testing asay message 4.</span>")
-
-		to_chat(owner,"<span class='game say'><b>Test Person</b> says, \"Testing say message 5.\"</span>")
-		to_chat(owner,"<span class='notice'>Testing notice message 5.</span>")
-		to_chat(owner,"<span class='danger'>Testing danger message 5.</span>")
-		to_chat(owner,"<span class='secradio'>\[Security\] <b>Secu Person</b> says, \"Testing radio message 5\".</span>")
-		to_chat(owner,"<span class='ooc'><span class='everyone'>Testing OOC message 5.</span></span>")
-		to_chat(owner,"<span class='ooc'><span class='looc'>Testing LOOC message 5.</span></span>")
-		to_chat(owner,"<span class='admin_channel'>Testing asay message 5.</span>")
-
-		to_chat(owner,"<span class='game say'><b>The Clown</b> says, \"Honk!\"</span>")
-		to_chat(owner,"<span class='game say'><b>The Clown</b> says, \"Honk!\"</span>")
-		to_chat(owner,"<span class='game say'><b>The Clown</b> says, \"Honk!\"</span>")
-		to_chat(owner,"<span class='game say'><b>The Clown</b> says, \"Honk!\"</span>")
-		to_chat(owner,"<span class='game say'><b>The Clown</b> says, \"Honk!\"</span>")
-		to_chat(owner,"<span class='game say'><b>The Clown</b> says, \"Honk!\"</span>")
-
-		var/mob/fox/fox = new()
-		to_chat(owner,"<span class='notice'>[bicon(fox)] Image Testing</span>")
-		*/
 
 //Perform DB shenanigans
 /datum/chatOutput/proc/load_database()
@@ -256,6 +201,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 			data = keepalive(arglist(params))
 		if("ident")
 			data = bancheck(arglist(params))
+		if("unloading")
+			loaded = FALSE
 
 	if(data)
 		send_event(event = data)
