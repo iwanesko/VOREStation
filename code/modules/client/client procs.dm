@@ -109,6 +109,7 @@
 		return
 
 	chatOutput = new /datum/chatOutput(src) //veechat
+	chatOutput.send_resources()
 	spawn()
 		chatOutput.start()
 
@@ -467,6 +468,7 @@ client/verb/character_setup()
 	//The hard way
 	qdel_null(src.chatOutput)
 	chatOutput = new /datum/chatOutput(src) //veechat
+	chatOutput.send_resources()
 	spawn()
 		chatOutput.start()
 	

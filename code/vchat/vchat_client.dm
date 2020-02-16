@@ -64,6 +64,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	var/loaded = FALSE
 	var/list/message_queue = list()
 	var/broken = FALSE
+	var/resources_sent = FALSE
 
 	var/last_topic_time = 0
 	var/too_many_topics = 0
@@ -77,6 +78,12 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 /datum/chatOutput/Destroy()
 	owner = null
 	. = ..()
+
+//Shove all the assets at them
+/datum/chatOutput/proc/send_resources()
+	for(var/filename in GLOB.vchatFiles)
+		owner << browse_rsc(file(filename))
+	resources_sent = TRUE
 
 //Called from client/New() in a spawn()
 /datum/chatOutput/proc/start()
@@ -94,6 +101,9 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return FALSE
 
+	if(!resources_sent)
+		send_resources()
+
 	load()
 
 	return TRUE
@@ -108,9 +118,6 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	winshow(owner, "oldoutput", FALSE)
 	winshow(owner, "htmloutput", FALSE)
 
-	//Shove all the assets at them
-	for(var/filename in GLOB.vchatFiles)
-		owner << browse_rsc(file(filename))
 	owner << browse(file2text("code/vchat/html/vchat.html"), "window=htmloutput")
 	
 	//Check back later
@@ -133,7 +140,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 
 	winshow(owner, "oldoutput", FALSE)
 	winshow(owner, "htmloutput", TRUE)
-	winset(owner, "chatloadlabel", FALSE)
+	winshow(owner, "chatloadlabel", FALSE)
 	
 //Perform DB shenanigans
 /datum/chatOutput/proc/load_database()
