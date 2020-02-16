@@ -112,7 +112,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		return
 
 	//Simple loading page. I wish Byond wasn't so terrible.
-	owner << browse(vchat_loading_page), "window=htmloutput")
+	owner << browse(vchat_loading_page, "window=htmloutput")
 
 	//Shove all the assets at them
 	for(var/asset in global.chatResources)
