@@ -110,6 +110,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 				qdel(src)
 				return
 			
+	alert(owner, "I couldn't load VChat for you. Try reconnecting!")
 
 //var/list/joins = list() //Just for testing with the below
 //Called by Topic, when the JS in the HTML page finishes loading
