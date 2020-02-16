@@ -17,7 +17,11 @@
 </head>
 
 <body>
-<div id="app" @mouseup="on_mouseup">
+<div id="loader">
+	<p>VChat is still loading. If you see this for a very long time, try the OOC 'Reload VChat' verb, or reconnecting.</p>
+	<p>Sometimes if you're still caching resources, it will take longer than usual.</p>
+</div>
+<div id="app" @mouseup="on_mouseup" style="display: none;">
 
 	<!-- Top menu -->
 	<div class="ui top fixed pointing menu" :class="{ inverted: inverted }">
@@ -150,6 +154,8 @@
 	//Document Ready
 	(function(){
 		start_vchat();
+		document.getElementById("loader").style.display = 'none';
+		document.getElementById("app").style.display = 'block';
 	})();
 </script>
 </body>

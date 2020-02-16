@@ -37,15 +37,16 @@ var/vchat_loading_page = {"
 "}
 
 // The to_chat() macro calls this proc
-/proc/__to_chat(var/target, var/message)
+/proc/__to_chat(var/target, var/message, var/dblog = TRUE)
 	// First do logging in database
-	if(isclient(target))
-		var/client/C = target
-		vchat_add_message(C.ckey,message)
-	else if(ismob(target))
-		var/mob/M = target
-		if(M.ckey)
-			vchat_add_message(M.ckey,message)
+	if(dblog)
+		if(isclient(target))
+			var/client/C = target
+			vchat_add_message(C.ckey,message)
+		else if(ismob(target))
+			var/mob/M = target
+			if(M.ckey)
+				vchat_add_message(M.ckey,message)
 
 	// Now lets either queue it for sending, or send it right now
 	if(Master.current_runlevel == RUNLEVEL_INIT || !SSchat?.subsystem_initialized)
@@ -111,19 +112,20 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return
 
-	//Simple loading page. I wish Byond wasn't so terrible.
-	owner << browse(vchat_loading_page, "window=htmloutput")
+	DIRECT_OUTPUT(owner, "Loading VChat... please wait.\nIf you see this for more than a minute, try the OOC verb 'Reload VChat', or reconnecting.\nSometimes when resources are being cached by your client, it can take a while.")
 
 	//Shove all the assets at them
 	for(var/asset in global.chatResources)
 		owner << browse_rsc(file(asset))
-		owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
+		owner << browse(file2text("code/vchat/html/vchat.html"), "window=htmloutput")
 	
 	//Check back later
 	sleep(60 SECONDS)
 	if(!loaded)
 		broken = TRUE
-		alert(owner, "It took too long to load VChat. You can try using the 'OOC' verb, 'Reload VChat' to try again, or try reconnecting.")
+		DIRECT_OUTPUT(owner, "VChat didn't load after some time. Switching to use this window as a fallback. Try using 'Reload VChat' verb in OOC verbs, or reconnecting to try again.")
+		sleep(5 SECONDS)
+		load_database() //Give them history anyway
 
 //var/list/joins = list() //Just for testing with the below
 //Called by Topic, when the JS in the HTML page finishes loading
@@ -132,26 +134,24 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		return
 
 	loaded = TRUE
+	broken = FALSE
 	owner.chatOutputLoadedAt = world.time
-	winset(owner, "htmloutput", "is-disabled=false")
 	send_playerinfo()
-	spawn()
-		load_database()
-		push_queue()
+	
+	load_database()
 
+	winset(owner, "oldoutput", "is-disabled=true")
+	winset(owner, "oldoutput", "is-visible=false")
+	winset(owner, "htmloutput", "is-visible=true")
+	winset(owner, "htmloutput", "is-disabled=false")
+	
 //Perform DB shenanigans
 /datum/chatOutput/proc/load_database()
+	set waitfor = FALSE
 	var/list/results = vchat_get_messages(owner.ckey, world.time - BACKLOG_LENGTH)
 	for(var/list/message in results)
-		message_queue[++message_queue.len] = message
-
-//Empty the message queue
-/datum/chatOutput/proc/push_queue()
-	for(var/list/pending in message_queue)
-		to_chat_immediate(owner, pending["time"], pending["message"])
-
-	message_queue.Cut()
-	message_queue = null
+		to_chat_immediate(owner, message["time"], message["message"])
+		CHECK_TICK
 
 //Provide the JS with who we are
 /datum/chatOutput/proc/send_playerinfo()
@@ -278,11 +278,11 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 /proc/is_valid_tochat_target(target)
 	return !istype(target, /savefile) && (ismob(target) || islist(target) || isclient(target) || target == world)
 
-//Actually delivers the message to the client's browser window via client << output()
-// Call using macro: to_chat(target, message)
 var/to_chat_filename
 var/to_chat_line
 var/to_chat_src
+
+//This proc is only really used if the SSchat subsystem is unavailable (not started yet)
 /proc/to_chat_immediate(target, time, message)
 	if(!is_valid_tochat_message(message) || !is_valid_tochat_target(target))
 		target << message

@@ -1205,6 +1205,17 @@ window "outputwindow"
 		can-resize = false
 		is-pane = true
 		outer-size = 654x494
+	elem "oldoutput"
+		type = BROWSER
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		background-color = none
+		is-disabled = true
+		is-visible = true
+		saved-params = ""
+		auto-format = false
 	elem "htmloutput"
 		type = BROWSER
 		pos = 0,0
@@ -1213,6 +1224,7 @@ window "outputwindow"
 		anchor2 = 100,100
 		background-color = none
 		is-disabled = true
+		is-visible = false
 		saved-params = ""
 		auto-format = false
 
