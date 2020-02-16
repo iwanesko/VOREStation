@@ -255,8 +255,6 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 			data = keepalive(arglist(params))
 		if("ident")
 			data = bancheck(arglist(params))
-		if("darkmode")
-			data = owner.toggle_darkmode(arglist(params))
 
 	if(data)
 		send_event(event = data)

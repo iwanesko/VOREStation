@@ -3384,7 +3384,6 @@
 #include "code\unit_tests\integrated_circuits\logic.dm"
 #include "code\unit_tests\integrated_circuits\trig.dm"
 #include "code\vchat\vchat_client.dm"
-#include "code\vchat\vchat_darkmode.dm"
 #include "code\vchat\vchat_db.dm"
 #include "code\ZAS\Airflow.dm"
 #include "code\ZAS\Atom.dm"
