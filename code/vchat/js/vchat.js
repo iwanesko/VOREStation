@@ -8,6 +8,25 @@ var vchat_opts = {
 	cookiePrefix: "vst-" //If you're another server, you can change this if you want.
 };
 
+var DARKMODE_COLORS = {
+	buttonBgColor: "#40628a",
+	buttonTextColor: "#FFFFFF",
+	windowBgColor: "#272727",
+	highlightColor: "#009900",
+	tabTextColor: "#FFFFFF",
+	tabBackgroundColor: "#272727"
+};
+
+var LIGHTMODE_COLORS = {
+	buttonBgColor: "none",
+	buttonTextColor: "#000000",
+	windowBgColor: "none",
+	highlightColor: "#007700",
+	tabTextColor: "#000000",
+	tabBackgroundColor: "none"
+};
+
+
 /***********
 *
 * Setup Methods
@@ -212,10 +231,11 @@ function start_vue() {
 				set_storage("darkmode",newSetting);
 				if(newSetting) { //Special treatment for <body> which is outside Vue's scope and has custom css
 					document.body.classList.add("inverted");
+					switch_ui_mode(DARKMODE_COLORS);
 				} else {
 					document.body.classList.remove("inverted");
+					switch_ui_mode(LIGHTMODE_COLORS);
 				}
-				push_Topic("darkmode&param[enabled]="+newSetting);
 			}, 
 			crushing: function (newSetting) {
 				set_storage("crushing",newSetting);
@@ -630,6 +650,50 @@ function get_cookie(key, deffo) {
 	candidates.cookie = cookie_object[key]; //Return value of that key in our object (or undefined)
 }
 
+// Button Controls that need background-color and text-color set.
+var SKIN_BUTTONS = [
+	/* Rpane */ "rpane.textb", "rpane.infob", "rpane.wikib", "rpane.forumb", "rpane.rulesb", "rpane.github", "rpane.mapb", "rpane.changelog",
+	/* Mainwindow */ "mainwindow.saybutton", "mainwindow.mebutton", "mainwindow.hotkey_toggle"
+	
+];
+// Windows or controls that need background-color set.
+var SKIN_ELEMENTS = [
+	/* Mainwindow */ "mainwindow", "mainwindow.mainvsplit", "mainwindow.tooltip",
+	/* Rpane */ "rpane", "rpane.rpanewindow", "rpane.mediapanel",
+];
+
+function switch_ui_mode(options) {
+	doWinset(SKIN_BUTTONS.reduce(function(params, ctl) {params[ctl + ".background-color"] = options.buttonBgColor; return params;}, {}));
+	doWinset(SKIN_BUTTONS.reduce(function(params, ctl) {params[ctl + ".text-color"] = options.buttonTextColor; return params;}, {}));
+	doWinset(SKIN_ELEMENTS.reduce(function(params, ctl) {params[ctl + ".background-color"] = options.windowBgColor; return params;}, {}));
+	doWinset("infowindow", {
+		"background-color": options.tabBackgroundColor,
+		"text-color": options.tabTextColor
+	});
+	doWinset("infowindow.info", {
+		"background-color": options.tabBackgroundColor,
+		"text-color": options.tabTextColor,
+		"highlight-color": options.highlightColor,
+		"tab-text-color": options.tabTextColor,
+		"tab-background-color": options.tabBackgroundColor
+	});
+}
+
+function doWinset(control_id, params) {
+	if (typeof params === 'undefined') {
+		params = control_id;  // Handle single-argument use case.
+		control_id = null;
+	}
+	var url = "byond://winset?";
+	if (control_id) {
+		url += ("id=" + control_id + "&");
+	}
+	url += Object.keys(params).map(function(ctl) {
+		return ctl + "=" + encodeURIComponent(params[ctl]);
+	}).join("&");
+	window.location = url;
+}
+
 /***********
 *
 * Vue Components
@@ -648,7 +712,7 @@ function get_cookie(key, deffo) {
 	.alert = global announcer (join messages, etc, the fake radios)
 	.syndradio
 	.centradio
-	.airadio
+	.airadioc
 	.entradio
 	.comradio
 	.secradio
