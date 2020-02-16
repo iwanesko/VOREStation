@@ -10,6 +10,32 @@ var/list/chatResources = list(
 	"code/vchat/css/ss13styles.css" //Ingame styles
 )
 
+var/vchat_loading_page = {"
+<!DOCTYPE html>
+<html debug="true">
+<head>
+	<title>VChat Troubleshooting</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h3>Please wait, VChat is loading...</h3>
+	<p>If you see this for an extended period (more than a couple minutes), try the OOC verb 'Reload VChat', or reconnecting.</p>
+	<p>If you still can't get chat to work, please contact a developer out-of-game with a screenshot of the following: </p>
+
+	<div id="systeminfo"></div>
+</body>
+<script>
+	(function(){
+		var el = document.getElementById("systeminfo");
+		var info = "";
+		info += "<b>Useragent:</b> " + navigator.userAgent + "<br>"
+		el.innerHTML = info;
+	})();
+</script>
+</html>
+"}
+
 // The to_chat() macro calls this proc
 /proc/__to_chat(var/target, var/message)
 	// First do logging in database
@@ -86,27 +112,18 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		return
 
 	//Simple loading page. I wish Byond wasn't so terrible.
-	owner << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
+	owner << browse(vchat_loading_page), "window=htmloutput")
+
+	//Shove all the assets at them
+	for(var/asset in global.chatResources)
+		owner << browse_rsc(file(asset))
+		owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
 	
-	//Attempt to actually push the files and HTML page into their cache and browser respectively. Loaded will be set by Topic() when the JS in the HTML fires it.
-	for(var/attempts in 1 to 5)
-		if(loaded) return
-
-		for(var/asset in global.chatResources)
-			owner << browse_rsc(file(asset))
-
-		for(var/subattempts in 1 to 3)
-			if(loaded) return
-			
-			owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
-			log_debug("Sent [owner] the VChat HTML, attempt [subattempts], now waiting.")
-			sleep(10 SECONDS) //This can be REALLY slow sometimes, depending on client and if the server is busy or whatever.
-			
-			if(!owner)
-				qdel(src)
-				return
-			
-	alert(owner, "I couldn't load VChat for you. Try reconnecting!")
+	//Check back later
+	sleep(60 SECONDS)
+	if(!loaded)
+		broken = TRUE
+		alert(owner, "It took too long to load VChat. You can try using the 'OOC' verb, 'Reload VChat' to try again, or try reconnecting.")
 
 //var/list/joins = list() //Just for testing with the below
 //Called by Topic, when the JS in the HTML page finishes loading
