@@ -94,13 +94,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		qdel(src)
 		return FALSE
 
-	winshow(owner, "chatloadlabel", TRUE)
-
-	if(winget(owner, "htmloutput", "is-visible") == "false")
-		done_loading()
-
-	else
-		load()
+	load()
 
 	return TRUE
 
@@ -110,6 +104,9 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	if(!owner)
 		qdel(src)
 		return
+
+	winshow(owner, "oldoutput", FALSE)
+	winshow(owner, "htmloutput", FALSE)
 
 	//Shove all the assets at them
 	for(var/filename in GLOB.vchatFiles)
