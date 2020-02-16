@@ -12,32 +12,6 @@ GLOBAL_LIST_INIT(vchatFiles, list(
 	"code/vchat/js/vchat.js"
 ))
 
-GLOBAL_VAR_INIT(vchat_loading_page, {"
-<!DOCTYPE html>
-<html debug="true">
-<head>
-	<title>VChat Troubleshooting</title>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-	<h3>Please wait, VChat is loading...</h3>
-	<p>If you see this for an extended period (more than a couple minutes), try the OOC verb 'Reload VChat', or reconnecting.</p>
-	<p>If you still can't get chat to work, please contact a developer out-of-game with a screenshot of the following: </p>
-
-	<div id="systeminfo"></div>
-</body>
-<script>
-	(function(){
-		var el = document.getElementById("systeminfo");
-		var info = "";
-		info += "<b>Useragent:</b> " + navigator.userAgent + "<br>"
-		el.innerHTML = info;
-	})();
-</script>
-</html>
-"})
-
 // The to_chat() macro calls this proc
 /proc/__to_chat(var/target, var/message)
 	// First do logging in database
