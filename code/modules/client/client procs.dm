@@ -463,22 +463,11 @@ client/verb/character_setup()
 	log_debug("[key_name(src)] reloaded VChat.")
 	winset(src, "htmloutput", "is-disabled=true")
 	
-	//Loading screen (online)
-	src << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
-	
-	//The easy way
-	if(src.chatOutput)
-		chatOutput.loaded = FALSE
-		chatOutput.start(online = TRUE)
-		sleep(10)
-		if(chatOutput.loaded)
-			return
-	
 	//The hard way
 	qdel_null(src.chatOutput)
 	chatOutput = new /datum/chatOutput(src) //veechat
 	spawn()
-		chatOutput.start(online = TRUE)
+		chatOutput.start()
 	
 
 //This is for getipintel.net.

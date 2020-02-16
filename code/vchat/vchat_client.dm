@@ -55,7 +55,7 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	. = ..()
 
 //Called from client/New() in a spawn()
-/datum/chatOutput/proc/start(var/online = FALSE)
+/datum/chatOutput/proc/start()
 	if(!owner)
 		qdel(src)
 		return FALSE
@@ -74,21 +74,19 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		done_loading()
 
 	else
-		load(online)
+		load()
 
 	return TRUE
 
 //Attempts to actually load the HTML page into the client's UI
-/datum/chatOutput/proc/load(var/online = FALSE)
+/datum/chatOutput/proc/load()
 	set waitfor = FALSE
 	if(!owner)
 		qdel(src)
 		return
 
 	//Simple loading page. I wish Byond wasn't so terrible.
-	owner << browse(file2text('code/vchat/html/troubleshooting.html'), "window=htmloutput")
-	sleep(5 SECONDS)
-	owner << browse(file2text('code/vchat/html/troubleshooting.html'), "window=htmloutput")
+	owner << browse(file2text("code/vchat/html/troubleshooting.html"), "window=htmloutput")
 	
 	//Attempt to actually push the files and HTML page into their cache and browser respectively. Loaded will be set by Topic() when the JS in the HTML fires it.
 	for(var/attempts in 1 to 5)
@@ -100,11 +98,8 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		for(var/subattempts in 1 to 3)
 			if(loaded) return
 			
-			if(online)
-				owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
-			else
-				owner << browse(file2text('code/vchat/html/htmlchat.html'), "window=htmloutput")
-			log_debug("Sent [owner] the VChat HTML, attempt [subattempts], waiting 30 seconds.")
+			owner << browse(file2text("code/vchat/html/htmlchat.html"), "window=htmloutput")
+			log_debug("Sent [owner] the VChat HTML, attempt [subattempts], now waiting.")
 			sleep(10 SECONDS) //This can be REALLY slow sometimes, depending on client and if the server is busy or whatever.
 			
 			if(!owner)
