@@ -3,16 +3,16 @@
 //The 'V' is for 'VORE' but you can pretend it's for Vue.js if you really want.
 
 //These are sent to the client via browse_rsc() in advance so the HTML can access them.
-var/list/chatResources = list(
-	"code/vchat/js/polyfills.js", //Functions because IE is bad
-	"code/vchat/js/vchat.js", //Main VChat stuff
-	"code/vchat/js/vue.min.js", //UI framework
-	"code/vchat/css/semantic.min.css", //UI framework
-	"code/vchat/css/vchat-font-embedded.css", //Mini icons file
-	"code/vchat/css/ss13styles.css" //Ingame styles
-)
+GLOBAL_LIST_INIT(vchatFiles, list(
+	"code/vchat/css/vchat-font-embedded.css",
+	"code/vchat/css/semantic.min.css",
+	"code/vchat/css/ss13styles.css",
+	"code/vchat/js/polyfills.js",
+	"code/vchat/js/vue.min.js",
+	"code/vchat/js/vchat.js"	
+))
 
-var/vchat_loading_page = {"
+GLOBAL_VAR_INIT(vchat_loading_page, {"
 <!DOCTYPE html>
 <html debug="true">
 <head>
@@ -36,7 +36,7 @@ var/vchat_loading_page = {"
 	})();
 </script>
 </html>
-"}
+"})
 
 // The to_chat() macro calls this proc
 /proc/__to_chat(var/target, var/message)
@@ -87,12 +87,14 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	if(!winexists(owner, "htmloutput"))
 		spawn()
 			alert(owner.mob, "Updated chat window does not exist. If you are using a custom skin file please allow the game to update.")
-		broken = TRUE
+		become_broken()
 		return FALSE
 
 	if(!owner) // In case the client vanishes before winexists returns
 		qdel(src)
 		return FALSE
+
+	winset(owner, "chatloadlabel", "is-visible=true")
 
 	if(winget(owner, "htmloutput", "is-disabled") == "false")
 		done_loading()
@@ -110,19 +112,15 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		return
 
 	DIRECT_OUTPUT(owner, "Loading VChat... please wait.\nIf you see this for more than a minute, try the OOC verb 'Reload VChat', or reconnecting.\nSometimes when resources are being cached by your client, it can take a while.")
-
 	//Shove all the assets at them
-	for(var/asset in global.chatResources)
-		owner << browse_rsc(file(asset))
-		owner << browse(file2text("code/vchat/html/vchat.html"), "window=htmloutput")
+	for(var/filename in GLOB.vchatFiles)
+		owner << browse_rsc(file(filename))
+	owner << browse(file2text("code/vchat/html/vchat.html"), "window=htmloutput")
 	
 	//Check back later
 	sleep(60 SECONDS)
 	if(!loaded)
-		broken = TRUE
-		DIRECT_OUTPUT(owner, "VChat didn't load after some time. Switching to use this window as a fallback. Try using 'Reload VChat' verb in OOC verbs, or reconnecting to try again.")
-		sleep(5 SECONDS)
-		load_database() //Give them history anyway
+		become_broken()
 
 //var/list/joins = list() //Just for testing with the below
 //Called by Topic, when the JS in the HTML page finishes loading
@@ -137,10 +135,9 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 	
 	load_database()
 
-	winset(owner, "oldoutput", "is-disabled=true")
-	winset(owner, "oldoutput", "is-visible=false")
-	winset(owner, "htmloutput", "is-visible=true")
-	winset(owner, "htmloutput", "is-disabled=false")
+	winset(owner, "oldoutput", "is-disabled=true;is-visible=false")
+	winset(owner, "htmloutput", "is-visible=true;is-disabled=false")
+	winset(owner, "chatloadlabel", "is-visible=false")
 	
 //Perform DB shenanigans
 /datum/chatOutput/proc/load_database()
@@ -150,6 +147,20 @@ GLOBAL_DATUM_INIT(iconCache, /savefile, new("data/iconCache.sav")) //Cache of ic
 		to_chat_immediate(owner, message["time"], message["message"])
 		CHECK_TICK
 
+//It din work
+/datum/chatOutput/proc/become_broken()
+	broken = TRUE
+	loaded = FALSE
+	
+	winset(owner, "htmloutput", "is-visible=false;is-disabled=true")
+	winset(owner, "oldoutput", "is-disabled=false;is-visible=true")
+	winset(owner, "chatloadlabel", "is-visible=false")
+	
+	load_database() //Give them history anyway
+
+	spawn()
+		alert(owner,"VChat didn't load after some time. Switching to use oldchat as a fallback. Try using 'Reload VChat' verb in OOC verbs, or reconnecting to try again.")
+	
 //Provide the JS with who we are
 /datum/chatOutput/proc/send_playerinfo()
 	if(!owner)

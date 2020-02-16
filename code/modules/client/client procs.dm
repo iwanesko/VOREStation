@@ -108,19 +108,18 @@
 		del(src)
 		return
 
+	chatOutput = new /datum/chatOutput(src) //veechat
+	spawn()
+		chatOutput.start()
+
 	//Only show this if they are put into a new_player mob. Otherwise, "what title screen?"
 	if(isnewplayer(src.mob))
 		to_chat(src, "<font color='red'>If the title screen is black, resources are still downloading. Please be patient until the title screen appears.</font>")
-
 
 	GLOB.clients += src
 	GLOB.directory[ckey] = src
 
 	GLOB.ahelp_tickets.ClientLogin(src)
-
-	chatOutput = new /datum/chatOutput(src) //veechat
-	spawn()
-		chatOutput.start()
 
 	//Admin Authorisation
 	holder = admin_datums[ckey]
